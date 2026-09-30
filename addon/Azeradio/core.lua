@@ -4,12 +4,26 @@
 -- not exceed its own, so one folder serves both games.
 --
 -- What it does: on every zone change (and, optionally, combat start/end) it
--- prints one machine-readable line into chat:
+-- writes one machine-readable line to the chat log file (never shown on screen):
 --   [AZERADIO] zone="..." subzone="..." instance="..." instanceName="..." instanceID="..." combat="0|1" why="..."
 -- The Azeradio tray app tails Logs/WoWChatLog.txt, parses those lines, and
 -- switches Spotify playlists. Turn on chat logging in game for this to work.
 
 local PREFIX = "[AZERADIO]"
+
+-- Hidden log frame: the client writes every AddMessage call to
+-- Logs/WoWChatLog.txt, exactly like any chat window — but this frame is a
+-- single pixel parked off-screen, so the player never sees a thing. The
+-- frame stays shown (only its position hides it), so logging behaves
+-- exactly like any ordinary chat window.
+-- (If this ever stops logging, the fallback is a dedicated FCF chat window
+-- with its tab hidden.)
+
+local logFrame = CreateFrame("ScrollingMessageFrame", "AzeradioLogFrame", UIParent)
+logFrame:SetSize(1, 1)
+logFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", -10, 10)
+logFrame:SetMaxLines(50)
+logFrame:SetFontObject(ChatFontNormal)
 
 local frame = CreateFrame("Frame")
 frame:RegisterEvent("PLAYER_ENTERING_WORLD")
@@ -30,7 +44,7 @@ local function announce(why)
     local subzone = GetMinimapZoneText() or ""
     local instanceName, instanceType, _, _, _, _, _, instanceID = GetInstanceInfo()
     local combat = InCombatLockdown() and "1" or "0"
-    DEFAULT_CHAT_FRAME:AddMessage(
+    logFrame:AddMessage(
         ('%s zone="%s" subzone="%s" instance="%s" instanceName="%s" instanceID="%s" combat="%s" why="%s"'):format(
             PREFIX,
             esc(zone),
@@ -65,6 +79,7 @@ SlashCmdList["AZERADIO"] = function(msg)
         DEFAULT_CHAT_FRAME:AddMessage(PREFIX .. " combat announcements off")
     elseif msg == "test" then
         announce("test")
+        DEFAULT_CHAT_FRAME:AddMessage(PREFIX .. " test event sent (invisible) — check the tray status line")
     else
         DEFAULT_CHAT_FRAME:AddMessage(PREFIX .. " bridge active (combat " .. (combatAnnounce and "on" or "off") .. ")")
         DEFAULT_CHAT_FRAME:AddMessage(PREFIX .. " usage: /azeradio combat on|off, /azeradio test")

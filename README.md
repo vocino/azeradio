@@ -10,7 +10,7 @@ WoW's music is fine, but it is the same everywhere. You want Orgrimmar to sound 
 
 WoW addons cannot reach the network, so Azeradio is two pieces with a log file between them:
 
-1. The addon (`addon/Azeradio`) prints one machine-readable line into chat on every zone change and combat start/end.
+1. The addon (`addon/Azeradio`) writes one machine-readable line into the chat log file on every zone change and combat start/end. It is invisible in game.
 2. The tray app (`tray/`) tails `Logs/WoWChatLog.txt`, matches the zone to a playlist in your `mappings.json`, and tells Spotify to play it through the official Web API.
 
 One addon folder serves both Midnight and Forever. Two `.toc` files (`120100` for Midnight, `16001` for Forever), one shared `core.lua`. Each client loads the `.toc` that matches it.

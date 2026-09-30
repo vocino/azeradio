@@ -37,7 +37,7 @@ Done. Azeradio refreshes its own login from here on. If Spotify ever logs you ou
 
 1. Download the latest `Azeradio-x.y.z.zip` from Releases and unzip it into your `Interface/AddOns` folder. The same zip works for Midnight (`_retail_`) and Forever (`_classic_beta_`).
 2. In game, type `/console chatLog 1` and press enter. This switches on the chat log file Azeradio reads. Once is enough.
-3. Log out and back in, or type `/reload`. Then type `/azeradio test`. If an `[AZERADIO]` line appears in chat, the bridge is working.
+3. Log out and back in, or type `/reload`. Then type `/azeradio test`. Chat prints a short confirmation (bridge lines themselves are invisible by design); the tray Settings status line should show your zone as its last event. That means the bridge is working.
 4. Each client needs step 2 done separately. If a client shows as missing in tray Settings → World of Warcraft, paste its folder path there; leave a field empty to auto-detect.
 
 ## Part 4: map your music (the fun part)
@@ -47,13 +47,13 @@ Done. Azeradio refreshes its own login from here on. If Spotify ever logs you ou
 3. Add one row per zone, subzone, or instance. Tip: play the game first and the names you visit show up as click-to-add shortcuts, spelled exactly right.
 4. Save. That is it. No restart: the next zone change picks up your edits. (The same data lives in `mappings.json` if you ever prefer editing the file.)
 
-How matching works: the most specific name wins. Subzone first, then zone, then instance, then the fallback. The combat playlist wins over all of them while you are in combat, and the zone music comes back when combat ends. Zone names must match the game exactly; `/azeradio test` prints what the addon sees if you are unsure of a spelling.
+How matching works: the most specific name wins. Subzone first, then zone, then instance, then the fallback. The combat playlist wins over all of them while you are in combat, and the zone music comes back when combat ends. Zone names must match the game exactly; if you are unsure of a spelling, play first and use the click-to-add shortcuts in Settings → Music.
 
 ## Troubleshooting
 
-- No `[AZERADIO]` lines in chat: the addon is not enabled (check the AddOns button on the character select screen), or chat logging is off (redo step 2 of Part 3).
+- Tray status says "No chat logs found": the addon is not enabled (check the AddOns button on the character select screen), or chat logging is off (redo step 2 of Part 3). Bridge lines are invisible in chat by design, so check the tray status line instead.
 - The browser never opens after saving the client ID: reopen **Settings** and check the status pill. If it says "Saved. Waiting for Spotify login," give it about ten seconds. If it still says "Not set up," the save did not stick; paste the ID again.
 - Spotify shows an error page instead of the Agree button: the redirect URI does not match. Go back to the dashboard Settings and confirm `http://127.0.0.1:8899/callback` is in the list and that you clicked Save.
 - Zones change but nothing plays: is Spotify open on a device? Is the account Premium? Does `mappings.json` have a URI for that zone, or a fallback?
-- Wrong music for a zone: the name in `mappings.json` must match the game exactly, including apostrophes. Use `/azeradio test` to see the exact names.
+- Wrong music for a zone: the name must match the game exactly, including apostrophes. Play first and use the click-to-add shortcuts in Settings → Music, which are spelled exactly right.
 - The addon shows as "out of date" after a WoW patch: tick "Load out of date AddOns" on the character select screen, or grab the newest release.
