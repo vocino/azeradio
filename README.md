@@ -43,7 +43,7 @@ Most specific match wins: subzone, then zone, then instance, then fallback. Comb
 - `addon/v*` tags package the addon zip.
 - `tray/v*` tags build the Windows installer.
 
-Both publish to GitHub Releases automatically.
+Both publish to GitHub Releases automatically. Full process: `docs/RELEASING.md`.
 
 ## What's inside
 
