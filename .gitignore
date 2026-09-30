@@ -2,3 +2,8 @@ tray/target/
 tray/gen/
 *.zip
 .DS_Store
+# Real user configs live in %APPDATA%\azeradio, never here. Ignore the
+# filenames outright so a stray copy can never be committed.
+spotify.json
+mappings.json
+wow.json
