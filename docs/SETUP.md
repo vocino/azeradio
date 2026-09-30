@@ -25,7 +25,7 @@ That is the whole Spotify side. Leave the tab open in case you need to double ch
 
 ## Part 2: connect Azeradio (about 2 minutes, once)
 
-1. Install the tray app from the latest `tray/v*` release and run it.
+1. Install the tray app from [Azeradio-setup.exe](https://github.com/vocino/azeradio/releases/download/tray/latest/Azeradio-setup.exe) (always the newest) and run it.
 2. Right-click the tray icon and choose **Settings**.
 3. Paste your client ID from Part 1 into the box and click **Save**. No text files, no JSON.
 4. Your browser opens at Spotify within a few seconds. Log in if asked, then click **Agree**.
@@ -35,7 +35,7 @@ Done. Azeradio refreshes its own login from here on. If Spotify ever logs you ou
 
 ## Part 3: WoW (about 2 minutes, once)
 
-1. Download the latest `Azeradio-x.y.z.zip` from Releases and unzip it into your `Interface/AddOns` folder. The same zip works for Midnight (`_retail_`) and Forever (`_classic_beta_`).
+1. Download [Azeradio.zip](https://github.com/vocino/azeradio/releases/download/addon/latest/Azeradio.zip) (always the newest) and unzip it into your `Interface/AddOns` folder. The same zip works for Midnight (`_retail_`) and Forever (`_classic_beta_`).
 2. In game, type `/console chatLog 1` and press enter. This switches on the chat log file Azeradio reads. Once is enough.
 3. Log out and back in, or type `/reload`. Then type `/azeradio test`. Chat prints a short confirmation (bridge lines themselves are invisible by design); the tray Settings status line should show your zone as its last event. That means the bridge is working.
 4. Each client needs step 2 done separately. If a client shows as missing in tray Settings → World of Warcraft, paste its folder path there; leave a field empty to auto-detect.

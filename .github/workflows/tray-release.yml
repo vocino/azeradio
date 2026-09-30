@@ -41,3 +41,19 @@ jobs:
           tagName: ${{ github.ref_name }}
           releaseName: "Azeradio tray ${{ github.ref_name }}"
           releaseDraft: false
+
+      - name: Stage latest assets
+        shell: bash
+        run: |
+          cp tray/target/release/bundle/nsis/*-setup.exe tray/Azeradio-setup.exe
+          cp tray/target/release/bundle/msi/*.msi tray/Azeradio.msi
+
+      - name: Update latest
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: tray/latest
+          name: "Azeradio tray (latest)"
+          body: "Latest tray build. Older versions live under Releases."
+          files: |
+            tray/Azeradio-setup.exe
+            tray/Azeradio.msi

@@ -25,9 +25,18 @@ jobs:
         run: |
           VERSION="${GITHUB_REF_NAME#addon/v}"
           cd addon && zip -r "../Azeradio-${VERSION}.zip" Azeradio
+          cp "../Azeradio-${VERSION}.zip" ../Azeradio.zip
 
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           files: Azeradio-*.zip
           generate_release_notes: true
+
+      - name: Update latest
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: addon/latest
+          name: "Azeradio addon (latest)"
+          body: "Latest addon build. Older versions live under Releases."
+          files: Azeradio.zip

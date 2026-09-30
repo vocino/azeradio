@@ -19,8 +19,10 @@ This is ToS-safe: the game writes the log file itself, and the tray app only use
 
 ## Install
 
-- **Addon:** download the latest `Azeradio-x.y.z.zip` from Releases and unzip it into `Interface/AddOns`. The same zip works in `_retail_` (Midnight) and `_classic_beta_` (Forever).
-- **Tray:** download the installer from the latest `tray/v*` release and run it. Then follow `docs/SETUP.md`: about 10 minutes, most of it clicking around Spotify's website once.
+- **Addon:** download [Azeradio.zip](https://github.com/vocino/azeradio/releases/download/addon/latest/Azeradio.zip) (always the newest) and unzip it into `Interface/AddOns`. The same zip works in `_retail_` (Midnight) and `_classic_beta_` (Forever).
+- **Tray:** download and run [Azeradio-setup.exe](https://github.com/vocino/azeradio/releases/download/tray/latest/Azeradio-setup.exe) (always the newest). Then follow `docs/SETUP.md`: about 10 minutes, most of it clicking around Spotify's website once.
+
+Older versions live under [Releases](https://github.com/vocino/azeradio/releases).
 
 ## Map zones to playlists
 

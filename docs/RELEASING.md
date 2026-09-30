@@ -9,6 +9,10 @@ The addon and the tray app version independently. Nothing is manual: pushing a t
 
 The version lives in the tag. Do not bump version files by hand; the workflows stamp them at build time.
 
+## Latest downloads
+
+Each release build also refreshes a rolling `latest` release per product (`addon/latest`, `tray/latest`) with stable asset names (`Azeradio.zip`, `Azeradio-setup.exe`, `Azeradio.msi`). README and SETUP link straight at those URLs, so users always get the newest build without knowing the version. The workflows own these tags; don't move them by hand.
+
 ## Cutting a release
 
 1. Merge everything to `main` first. Releases build from the tagged commit, so push before tagging.
