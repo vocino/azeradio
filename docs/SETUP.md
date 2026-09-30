@@ -25,20 +25,11 @@ That is the whole Spotify side. Leave the tab open in case you need to double ch
 
 ## Part 2: connect Azeradio (about 2 minutes, once)
 
-1. Install the tray app from the latest `tray/v*` release and run it. The first run creates its config files.
-2. Right-click the tray icon and choose **Open config folder**.
-3. Open `spotify.json` in Notepad. Paste your client ID between the quotes:
-   ```json
-   {
-     "client_id": "paste-your-client-id-here",
-     "access_token": "",
-     "refresh_token": "",
-     "expires_at": 0
-   }
-   ```
-   Paste it with no extra spaces inside the quotes.
-4. Save the file and wait a few seconds. Your browser opens at Spotify on its own. Log in if asked, then click **Agree**.
-5. The tab says "Azeradio is connected." Close it.
+1. Install the tray app from the latest `tray/v*` release and run it.
+2. Right-click the tray icon and choose **Settings**.
+3. Paste your client ID from Part 1 into the box and click **Save**. No text files, no JSON.
+4. Your browser opens at Spotify within a few seconds. Log in if asked, then click **Agree**.
+5. The tab says "Azeradio is connected." Close it. The settings window flips to Connected on its own.
 
 Done. Azeradio refreshes its own login from here on. If Spotify ever logs you out months down the line, the browser simply opens again by itself.
 
@@ -50,7 +41,7 @@ Done. Azeradio refreshes its own login from here on. If Spotify ever logs you ou
 
 ## Part 4: map your music (the fun part)
 
-1. Right-click the tray icon, **Open config folder**, open `mappings.json`.
+1. Right-click the tray icon, **Settings**, then **Open config folder**. Open `mappings.json`.
 2. To get a playlist's address: in Spotify, right-click a playlist, choose **Share**, then **Copy Spotify URI**. It looks like `spotify:playlist:37i9dQZF1DX...`. You want the URI, not the web link.
 3. Fill in the map:
    ```json
@@ -70,7 +61,7 @@ How matching works: the most specific name wins. Subzone first, then zone, then 
 ## Troubleshooting
 
 - No `[AZERADIO]` lines in chat: the addon is not enabled (check the AddOns button on the character select screen), or chat logging is off (redo step 2 of Part 3).
-- The browser never opens after pasting the client ID: open `spotify.json` again and check the ID sits between the quotes with no stray spaces. Then wait about ten seconds.
+- The browser never opens after saving the client ID: reopen **Settings** and check the status pill. If it says "Saved. Waiting for Spotify login," give it about ten seconds. If it still says "Not set up," the save did not stick; paste the ID again.
 - Spotify shows an error page instead of the Agree button: the redirect URI does not match. Go back to the dashboard Settings and confirm `http://127.0.0.1:8899/callback` is in the list and that you clicked Save.
 - Zones change but nothing plays: is Spotify open on a device? Is the account Premium? Does `mappings.json` have a URI for that zone, or a fallback?
 - Wrong music for a zone: the name in `mappings.json` must match the game exactly, including apostrophes. Use `/azeradio test` to see the exact names.
