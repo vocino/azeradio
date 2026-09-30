@@ -20,7 +20,7 @@ This is ToS-safe: the game writes the log file itself, and the tray app only use
 ## Install
 
 - **Addon:** download the latest `Azeradio-x.y.z.zip` from Releases and unzip it into `Interface/AddOns`. The same zip works in `_retail_` (Midnight) and `_classic_beta_` (Forever).
-- **Tray:** download the installer from the latest `tray/v*` release and run it. Then follow `docs/SETUP.md` once for the Spotify app setup.
+- **Tray:** download the installer from the latest `tray/v*` release and run it. Then follow `docs/SETUP.md`: about 10 minutes, most of it clicking around Spotify's website once.
 
 ## Map zones to playlists
 

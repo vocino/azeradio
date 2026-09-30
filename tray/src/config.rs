@@ -22,12 +22,12 @@ pub struct Mappings {
     pub device_id: Option<String>,
 }
 
+/// Bring your own key: the user pastes their own Spotify client ID here.
+/// No secret — the app logs in with PKCE (see spotify.rs).
 #[derive(Debug, Serialize, Deserialize, Default)]
 pub struct SpotifyAuth {
     #[serde(default)]
     pub client_id: String,
-    #[serde(default)]
-    pub client_secret: String,
     #[serde(default)]
     pub access_token: String,
     #[serde(default)]

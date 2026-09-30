@@ -121,7 +121,6 @@ fn watch() -> Result<(), String> {
         // First run: log in now so the browser opens at startup, not mid-pull.
         spotify::oauth_flow(&mut auth)?;
     }
-    let mappings = config::load_mappings();
 
     // Start at the end of the log so old lines do not replay.
     let mut pos = std::fs::metadata(&log).map(|m| m.len()).unwrap_or(0);
@@ -143,6 +142,9 @@ fn watch() -> Result<(), String> {
         pos = len;
         for line in buf.lines() {
             let Some(ev) = parse_line(line) else { continue };
+            // Reloaded per event so editing mappings.json takes effect
+            // on the next zone change. No restart needed.
+            let mappings = config::load_mappings();
             if let Err(e) = handle(&ev, &mut auth, &mappings, &mut current) {
                 eprintln!("[azeradio] {e}");
             }
