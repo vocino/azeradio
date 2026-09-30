@@ -16,19 +16,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Version stamping lives in tray/stamp-version.js (a file, not `node -e`):
+      # the old inline version broke because PowerShell mangles nested quotes.
       - name: Stamp version from tag
-        run: |
-          node -e "
-            const fs = require('fs');
-            const v = process.env.GITHUB_REF_NAME.replace('tray/v', '');
-            const tc = 'tray/tauri.conf.json';
-            const j = JSON.parse(fs.readFileSync(tc, 'utf8'));
-            j.version = v;
-            fs.writeFileSync(tc, JSON.stringify(j, null, 2) + '\n');
-            const ct = 'tray/Cargo.toml';
-            fs.writeFileSync(ct, fs.readFileSync(ct, 'utf8').replace(/^version = .*/m, 'version = \"' + v + '\"'));
-            console.log('stamped', v);
-          "
+        shell: bash
+        run: node tray/stamp-version.js "$GITHUB_REF_NAME"
 
       - uses: actions/setup-node@v4
         with:
