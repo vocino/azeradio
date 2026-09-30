@@ -1,8 +1,8 @@
 use crate::{config, spotify, wow};
-use std::collections::HashMap;
+use std::collections::{HashMap, VecDeque};
 use std::fs::File;
 use std::io::{Read, Seek, SeekFrom};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::time::Duration;
 
 #[derive(Debug, Default, Clone, serde::Serialize)]
@@ -121,6 +121,7 @@ fn note_event(ev: &ZoneEvent) {
     }
     if let Ok(mut s) = status().lock() {
         s.last_event = event_label(ev);
+        journal("info", event_label(ev));
         s.last_error.clear();
     }
 }
@@ -134,7 +135,61 @@ fn note_logs(n: usize) {
 fn note_error(e: &str) {
     if let Ok(mut s) = status().lock() {
         s.last_error = e.to_string();
+        journal("err", e.to_string());
     }
+}
+
+/// One row of the Settings activity feed. `ts` is unix seconds; the UI
+/// renders it in local time.
+#[derive(Debug, Clone, serde::Serialize)]
+pub struct LogEntry {
+    pub ts: u64,
+    pub kind: String,
+    pub text: String,
+}
+
+static JOURNAL: std::sync::OnceLock<std::sync::Mutex<VecDeque<LogEntry>>> =
+    std::sync::OnceLock::new();
+
+fn journal_store() -> &'static std::sync::Mutex<VecDeque<LogEntry>> {
+    JOURNAL.get_or_init(|| std::sync::Mutex::new(VecDeque::new()))
+}
+
+fn now_unix() -> u64 {
+    std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map(|d| d.as_secs())
+        .unwrap_or(0)
+}
+
+pub fn journal(kind: &str, text: String) {
+    if let Ok(mut j) = journal_store().lock() {
+        j.push_back(LogEntry {
+            ts: now_unix(),
+            kind: kind.to_string(),
+            text,
+        });
+        while j.len() > 100 {
+            j.pop_front();
+        }
+    }
+}
+
+pub fn activity() -> Vec<LogEntry> {
+    journal_store()
+        .lock()
+        .map(|j| j.iter().cloned().collect())
+        .unwrap_or_default()
+}
+
+/// Short label for a watched log: the flavor folder name without
+/// underscores ("retail"), or "custom" for the env-var override.
+fn log_label(p: &Path) -> String {
+    p.parent()
+        .and_then(|d| d.file_name())
+        .map(|n| n.to_string_lossy().trim_matches('_').to_string())
+        .filter(|s| !s.is_empty())
+        .unwrap_or_else(|| "custom".to_string())
 }
 
 fn handle(
@@ -149,6 +204,7 @@ fn handle(
     }
     spotify::ensure_token(auth)?;
     spotify::play_context(auth, &target, m.device_id.as_deref())?;
+    journal("ok", format!("{} → {}", event_label(ev), target));
     *current = target;
     Ok(())
 }
@@ -160,6 +216,7 @@ fn watch() -> Result<(), String> {
     // its end, so enabling chat logging mid-run doesn't replay history.
     let mut pos: HashMap<PathBuf, u64> = HashMap::new();
     let mut current = String::new();
+    let mut prev_logs: Option<Vec<PathBuf>> = None;
     let mut ticks: u64 = 0;
 
     loop {
@@ -169,6 +226,15 @@ fn watch() -> Result<(), String> {
         // logging take effect without a restart.
         let logs = wow::active_logs(&config::load_wow());
         note_logs(logs.len());
+        if prev_logs.as_ref() != Some(&logs) {
+            if logs.is_empty() {
+                journal("info", "No chat logs found".to_string());
+            } else {
+                let names: Vec<String> = logs.iter().map(|l| log_label(l)).collect();
+                journal("info", format!("Watching: {}", names.join(", ")));
+            }
+            prev_logs = Some(logs.clone());
+        }
         if logs.is_empty() {
             // Remind at most every ~30s so the console doesn't drown.
             if ticks % 60 == 1 {

@@ -1,4 +1,4 @@
-use crate::config::{self, SpotifyAuth};
+use crate::{bridge, config::{self, SpotifyAuth}};
 use base64::Engine as _;
 use sha2::{Digest, Sha256};
 use std::time::{SystemTime, UNIX_EPOCH};
@@ -89,6 +89,7 @@ pub fn oauth_flow(auth: &mut SpotifyAuth) -> Result<(), String> {
         challenge(&verifier)
     );
     let server = tiny_http::Server::http("127.0.0.1:8899").map_err(|e| e.to_string())?;
+    bridge::journal("info", "Opened browser for Spotify login".to_string());
     open::that(&auth_url).map_err(|e| e.to_string())?;
 
     let mut code: Option<String> = None;

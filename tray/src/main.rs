@@ -99,6 +99,22 @@ fn get_bridge() -> bridge::BridgeStatus {
     bridge::bridge_status()
 }
 
+#[tauri::command]
+fn pick_folder(current: String) -> Option<String> {
+    let mut dlg = rfd::FileDialog::new().set_title("Choose a World of Warcraft client folder");
+    let c = current.trim();
+    if !c.is_empty() && std::path::PathBuf::from(c).is_dir() {
+        dlg = dlg.set_directory(c);
+    }
+    dlg.pick_folder()
+        .map(|p| p.to_string_lossy().into_owned())
+}
+
+#[tauri::command]
+fn get_log() -> Vec<bridge::LogEntry> {
+    bridge::activity()
+}
+
 fn client_hint(id: &str) -> String {
     if id.len() >= 8 && id.is_ascii() {
         format!("{}…{}", &id[..4], &id[id.len() - 4..])
@@ -169,6 +185,8 @@ fn main() {
             save_mappings,
             get_recent,
             get_bridge,
+            pick_folder,
+            get_log,
             open_config_folder,
             open_dashboard,
             open_guide

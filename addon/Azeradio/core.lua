@@ -35,6 +35,10 @@ frame:RegisterEvent("PLAYER_REGEN_ENABLED")
 
 local combatAnnounce = true
 
+local function logState()
+    return (GetCVar("chatLog") == "1") and "on" or "off"
+end
+
 local function esc(s)
     return (tostring(s or ""):gsub('"', "'"))
 end
@@ -77,11 +81,19 @@ SlashCmdList["AZERADIO"] = function(msg)
     elseif msg == "combat off" then
         combatAnnounce = false
         DEFAULT_CHAT_FRAME:AddMessage(PREFIX .. " combat announcements off")
+    elseif msg == "log on" then
+        SetCVar("chatLog", "1")
+        DEFAULT_CHAT_FRAME:AddMessage(PREFIX .. " chat logging " .. logState() .. " — quit and restart the game fully (not /reload)")
+    elseif msg == "log off" then
+        SetCVar("chatLog", "0")
+        DEFAULT_CHAT_FRAME:AddMessage(PREFIX .. " chat logging " .. logState())
+    elseif msg == "log" then
+        DEFAULT_CHAT_FRAME:AddMessage(PREFIX .. " chat logging is " .. logState())
     elseif msg == "test" then
         announce("test")
         DEFAULT_CHAT_FRAME:AddMessage(PREFIX .. " test event sent (invisible) — check the tray status line")
     else
-        DEFAULT_CHAT_FRAME:AddMessage(PREFIX .. " bridge active (combat " .. (combatAnnounce and "on" or "off") .. ")")
-        DEFAULT_CHAT_FRAME:AddMessage(PREFIX .. " usage: /azeradio combat on|off, /azeradio test")
+        DEFAULT_CHAT_FRAME:AddMessage(PREFIX .. " bridge active (combat " .. (combatAnnounce and "on" or "off") .. ", chat log " .. logState() .. ")")
+        DEFAULT_CHAT_FRAME:AddMessage(PREFIX .. " usage: /azeradio combat on|off, /azeradio log on|off, /azeradio test")
     end
 end

@@ -76,6 +76,16 @@
   .chip { font-size: 12px; padding: 3px 10px; border-radius: 20px; border: 1px solid #2a2f3a; color: #ddd6c4; cursor: pointer; background: transparent; font-weight: 400; }
   .chip:hover { border-color: #f8b700; color: #f8b700; }
   a { color: #f8b700; }
+  .wrowhead { display: flex; justify-content: space-between; align-items: baseline; }
+  .linkbtn { background: none; border: none; color: #f8b700; font-weight: 400; padding: 0; font-size: 12px; }
+  .linkbtn:hover { filter: none; text-decoration: underline; }
+  .weff { font-family: ui-monospace, monospace; font-size: 11px; color: #8b8674; margin: 0 0 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .weff.found { color: #57d977; }
+  .actlog { max-height: 180px; overflow-y: auto; background: #0a0b0f; border: 1px solid #2a2f3a; border-radius: 6px; padding: 8px 10px; font-family: ui-monospace, monospace; font-size: 12px; }
+  .arow { margin: 0 0 3px; white-space: pre-wrap; word-break: break-word; }
+  .arow .ts { color: #5a564a; margin-right: 8px; }
+  .arow.kind-ok { color: #57d977; }
+  .arow.kind-err { color: #ff5a5a; }
 </style>
 </head>
 <body>
@@ -104,19 +114,22 @@
 
   <div class="card">
     <h2>World of Warcraft</h2>
-    <p class="note" style="margin-top:0">Where each client is installed. Leave a field empty to auto-detect.</p>
-    <label for="wowRetail">Retail</label>
+    <p class="note" style="margin-top:0">Paste the client folder (…\_retail_) or the whole World of Warcraft folder — or leave empty to auto-detect.</p>
+    <div class="wrowhead"><label for="wowRetail">Retail</label><button class="linkbtn" data-browse="retail">Browse…</button></div>
     <input id="wowRetail" type="text" placeholder="auto-detect…" autocomplete="off" spellcheck="false">
     <div class="wstat" id="wowRetailSt"></div>
-    <label for="wowClassic">Classic</label>
+    <div class="weff" id="wowRetailEff"></div>
+    <div class="wrowhead"><label for="wowClassic">Classic</label><button class="linkbtn" data-browse="classic">Browse…</button></div>
     <input id="wowClassic" type="text" placeholder="auto-detect…" autocomplete="off" spellcheck="false">
     <div class="wstat" id="wowClassicSt"></div>
-    <label for="wowForever">Forever</label>
+    <div class="weff" id="wowClassicEff"></div>
+    <div class="wrowhead"><label for="wowForever">Forever</label><button class="linkbtn" data-browse="forever">Browse…</button></div>
     <input id="wowForever" type="text" placeholder="auto-detect…" autocomplete="off" spellcheck="false">
     <div class="wstat" id="wowForeverSt"></div>
+    <div class="weff" id="wowForeverEff"></div>
     <button id="saveWow">Save</button>
     <div id="wowMsg"></div>
-    <p class="note">No chat log? In game, type <code>/console chatLog 1</code>, then <code>/reload</code>.</p>
+    <p class="note">No chat log? In game, type <code>/azeradio log on</code>, then quit and restart the game fully.</p>
   </div>
 
   <div class="card">
@@ -150,6 +163,11 @@
         <button class="ghost" id="openGuide">Setup guide</button>
       </div>
     </details>
+  </div>
+
+  <div class="card">
+    <h2>Activity</h2>
+    <div class="actlog" id="activity"><p class="empty">Waiting for the bridge…</p></div>
   </div>
 
   <script src="app.js"></script>

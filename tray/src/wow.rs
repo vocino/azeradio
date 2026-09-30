@@ -105,17 +105,32 @@ pub fn auto_detect(dir_name: &str, want_id: &str) -> Option<PathBuf> {
 pub fn resolve(name: &str, manual: &str) -> (Option<PathBuf>, &'static str) {
     let m = manual.trim();
     if !m.is_empty() {
-        let p = PathBuf::from(m);
-        if p.is_dir() {
-            return (Some(p), "manual");
-        }
-        return (None, "manual");
+        return (resolve_manual(name, m), "manual");
     }
     let (dir_name, want_id) = flavor_meta(name);
     match auto_detect(dir_name, want_id) {
         Some(p) => (Some(p), "auto"),
         None => (None, "none"),
     }
+}
+
+/// Manual paths accept either level: the flavor folder itself (has its own
+/// `Logs`) or the install root (the `World of Warcraft` folder), in which
+/// case we descend into the flavor and validate it.
+fn resolve_manual(name: &str, m: &str) -> Option<PathBuf> {
+    let p = PathBuf::from(m);
+    if !p.is_dir() {
+        return None;
+    }
+    if p.join("Logs").is_dir() {
+        return Some(p);
+    }
+    let (dir_name, want_id) = flavor_meta(name);
+    let f = p.join(dir_name);
+    if valid_flavor(&f, want_id) {
+        return Some(f);
+    }
+    Some(p)
 }
 
 pub fn state(name: &str, manual: &str) -> FlavorState {
@@ -155,4 +170,44 @@ pub fn active_logs(cfg: &config::WowPaths) -> Vec<PathBuf> {
         }
     }
     logs
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn wipe(p: &Path) {
+        let _ = std::fs::remove_dir_all(p);
+    }
+
+    #[test]
+    fn manual_flavor_dir_used_directly() {
+        let base = std::env::temp_dir().join("azeradio-test-flavor");
+        wipe(&base);
+        std::fs::create_dir_all(base.join("Logs")).unwrap();
+        let (dir, src) = resolve("retail", base.to_str().unwrap());
+        assert_eq!(src, "manual");
+        assert_eq!(dir, Some(base.clone()));
+        wipe(&base);
+    }
+
+    #[test]
+    fn manual_install_root_descends_to_flavor() {
+        let root = std::env::temp_dir().join("azeradio-test-root");
+        wipe(&root);
+        let flav = root.join("_retail_");
+        std::fs::create_dir_all(flav.join("Logs")).unwrap();
+        std::fs::write(flav.join(".flavor.info"), "Product Flavor!STRING:0\nwow\n").unwrap();
+        let (dir, src) = resolve("retail", root.to_str().unwrap());
+        assert_eq!(src, "manual");
+        assert_eq!(dir, Some(flav));
+        wipe(&root);
+    }
+
+    #[test]
+    fn manual_missing_path_resolves_none() {
+        let (dir, src) = resolve("retail", "D:\\definitely\\not\\here\\_retail_");
+        assert_eq!(src, "manual");
+        assert!(dir.is_none());
+    }
 }

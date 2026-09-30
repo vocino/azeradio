@@ -74,8 +74,12 @@ async function refreshWow() {
       const input = document.getElementById('wow' + cap(f));
       // Don't clobber a field the user is typing in.
       if (document.activeElement !== input) input.value = s.manual;
-      input.placeholder = s.path || 'auto-detect…';
-      input.title = s.path || '';
+      const eff = document.getElementById('wow' + cap(f) + 'Eff');
+      eff.textContent = s.path
+        ? 'Using: ' + s.path + (s.source === 'auto' ? ' (auto-detected)' : '')
+        : 'Not detected';
+      eff.className = 'weff' + (s.path ? ' found' : '');
+      eff.title = s.path || '';
       const st = wowStatusText(s);
       const el = document.getElementById('wow' + cap(f) + 'St');
       el.className = 'wstat ' + st.cls;
@@ -100,6 +104,22 @@ document.getElementById('saveWow').addEventListener('click', async () => {
   } catch (e) {
     msg.textContent = String(e);
   }
+});
+
+document.querySelectorAll('[data-browse]').forEach((b) => {
+  b.addEventListener('click', async () => {
+    const f = b.getAttribute('data-browse');
+    const input = document.getElementById('wow' + cap(f));
+    try {
+      const picked = await invoke('pick_folder', { current: input.value });
+      if (picked) {
+        input.value = picked;
+        document.getElementById('saveWow').click();
+      }
+    } catch (e) {
+      // dialog cancelled or failed; leave the field alone
+    }
+  });
 });
 
 // --- Music ---
@@ -244,13 +264,37 @@ async function refreshBridge() {
   }
 }
 
+async function refreshActivity() {
+  try {
+    const box = document.getElementById('activity');
+    const rows = await invoke('get_log');
+    box.innerHTML = '';
+    if (!rows.length) box.innerHTML = '<p class="empty">Waiting for the bridge…</p>';
+    for (const r of rows) {
+      const div = document.createElement('div');
+      div.className = 'arow kind-' + r.kind;
+      const ts = document.createElement('span');
+      ts.className = 'ts';
+      ts.textContent = new Date(r.ts * 1000).toLocaleTimeString();
+      div.appendChild(ts);
+      div.appendChild(document.createTextNode(r.text));
+      box.appendChild(div);
+    }
+    box.scrollTop = box.scrollHeight;
+  } catch (e) {
+    // bridge still starting
+  }
+}
+
 refresh();
 refreshWow();
 refreshMusic();
 refreshRecent();
 refreshBridge();
+refreshActivity();
 setInterval(() => {
   refreshWow();
   refreshRecent();
   refreshBridge();
+  refreshActivity();
 }, 5000);
