@@ -1,3 +1,4 @@
 tray/target/
+tray/gen/
 *.zip
 .DS_Store
