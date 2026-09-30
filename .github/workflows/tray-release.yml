@@ -1,0 +1,51 @@
+name: tray-release
+
+on:
+  push:
+    tags: ["tray/v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    # The tray app runs on the PC that runs WoW. Windows first;
+    # add macos-latest here (plus an icon.icns) when a Mac build is wanted.
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Stamp version from tag
+        run: |
+          node -e "
+            const fs = require('fs');
+            const v = process.env.GITHUB_REF_NAME.replace('tray/v', '');
+            const tc = 'tray/tauri.conf.json';
+            const j = JSON.parse(fs.readFileSync(tc, 'utf8'));
+            j.version = v;
+            fs.writeFileSync(tc, JSON.stringify(j, null, 2) + '\n');
+            const ct = 'tray/Cargo.toml';
+            fs.writeFileSync(ct, fs.readFileSync(ct, 'utf8').replace(/^version = .*/m, 'version = \"' + v + '\"'));
+            console.log('stamped', v);
+          "
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: tray
+
+      - name: Build and publish
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          projectPath: tray
+          tagName: ${{ github.ref_name }}
+          releaseName: "Azeradio tray ${{ github.ref_name }}"
+          releaseDraft: false

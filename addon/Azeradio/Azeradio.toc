@@ -1,0 +1,6 @@
+## Interface: 120100
+## Title: Azeradio
+## Notes: Announces zone changes for the Azeradio Spotify bridge (Midnight client)
+## Author: Vocino
+## Version: 0.1.0
+core.lua
