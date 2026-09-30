@@ -8,59 +8,80 @@
   * { box-sizing: border-box; }
   body {
     margin: 0; padding: 20px;
-    background: #0d0e13; color: #e8e8ee;
+    background: #0a0b0f; color: #ddd6c4;
     font-family: "Segoe UI", system-ui, sans-serif;
     font-size: 14px; line-height: 1.5;
   }
-  h1 { font-size: 18px; margin: 0 0 4px; letter-spacing: 0.5px; }
-  h1 .dot { color: #ff2e88; }
-  .sub { color: #8a8a96; margin: 0 0 16px; font-size: 13px; }
+  h1 { font-size: 18px; margin: 0 0 2px; letter-spacing: 0.5px; color: #f5edd8; font-weight: 600; }
+  h1 .dot { color: #f8b700; }
+  .sub { color: #8b8674; margin: 0 0 10px; font-size: 13px; }
+  .bridge { display: flex; align-items: center; gap: 7px; font-size: 12px; color: #8b8674; margin: 0 0 16px; }
+  .bdot { width: 8px; height: 8px; border-radius: 50%; background: #555; flex: none; }
+  .bdot.ok { background: #57d977; }
+  .bdot.warn { background: #f8b700; }
+  .bdot.bad { background: #ff5a5a; }
   .card {
-    background: #14151c; border: 1px solid #23242e;
+    background: #101318; border: 1px solid #232833;
     border-radius: 10px; padding: 16px; margin-bottom: 14px;
   }
-  .card h2 { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #8a8a96; margin: 0 0 12px; }
+  .card h2 { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #a09a86; margin: 0 0 12px; font-weight: 600; }
   .pill {
     display: inline-block; padding: 3px 10px; border-radius: 20px;
     font-size: 12px; font-weight: 600; margin-bottom: 12px;
   }
-  .pill.off { background: #2a1420; color: #ff2e88; border: 1px solid #ff2e88; }
-  .pill.wait { background: #2a2410; color: #ffd166; border: 1px solid #ffd166; }
-  .pill.on { background: #0f2a24; color: #00f5d4; border: 1px solid #00f5d4; }
-  label { display: block; font-size: 12px; color: #8a8a96; margin-bottom: 6px; }
+  .pill.off { background: #2a1215; color: #ff5a5a; border: 1px solid #ff5a5a; }
+  .pill.wait { background: #2a220e; color: #f8b700; border: 1px solid #f8b700; }
+  .pill.on { background: #0f2a1c; color: #57d977; border: 1px solid #57d977; }
+  label { display: block; font-size: 12px; color: #8b8674; margin-bottom: 6px; }
   input[type=text] {
     width: 100%; padding: 9px 10px; border-radius: 6px;
-    border: 1px solid #2c2d38; background: #0d0e13; color: #e8e8ee;
+    border: 1px solid #2a2f3a; background: #0a0b0f; color: #ddd6c4;
     font-family: ui-monospace, monospace; font-size: 13px; margin-bottom: 10px;
   }
-  input[type=text]:focus { outline: none; border-color: #ff2e88; }
+  input[type=text]:focus { outline: none; border-color: #f8b700; }
+  input[type=text]::placeholder { color: #5a564a; }
   button {
-    background: #ff2e88; color: #0d0e13; border: none; border-radius: 6px;
+    background: #f8b700; color: #14100a; border: none; border-radius: 6px;
     padding: 9px 16px; font-size: 13px; font-weight: 700; cursor: pointer;
   }
-  button:hover { filter: brightness(1.1); }
-  button.ghost { background: transparent; color: #e8e8ee; border: 1px solid #2c2d38; font-weight: 400; }
-  button.ghost:hover { border-color: #ff2e88; }
+  button:hover { filter: brightness(1.08); }
+  button.ghost { background: transparent; color: #ddd6c4; border: 1px solid #2a2f3a; font-weight: 400; }
+  button.ghost:hover { border-color: #f8b700; color: #f8b700; }
+  button.small { padding: 6px 12px; font-size: 12px; margin-bottom: 12px; }
   .row { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
-  details { margin-top: 12px; border-top: 1px solid #23242e; padding-top: 12px; }
-  summary { cursor: pointer; color: #00f5d4; font-size: 13px; }
-  details ol { margin: 10px 0 0; padding-left: 20px; color: #c9c9d4; font-size: 13px; }
+  details { margin-top: 12px; border-top: 1px solid #232833; padding-top: 12px; }
+  summary { cursor: pointer; color: #f8b700; font-size: 13px; }
+  details ol { margin: 10px 0 0; padding-left: 20px; color: #b8b2a0; font-size: 13px; }
   details ol li { margin-bottom: 8px; }
-  code { font-family: ui-monospace, monospace; background: #0d0e13; border: 1px solid #2c2d38; border-radius: 4px; padding: 2px 6px; font-size: 12px; color: #00f5d4; }
-  .note { font-size: 12px; color: #8a8a96; margin-top: 10px; }
-  #saveMsg { font-size: 12px; color: #00f5d4; margin-top: 8px; min-height: 18px; }
-  .wstat { font-size: 12px; margin: -4px 0 10px; min-height: 18px; }
-  .wstat.ok { color: #00f5d4; }
-  .wstat.warn { color: #ffd166; }
-  .wstat.bad { color: #ff2e88; }
-  #wowMsg { font-size: 12px; color: #00f5d4; margin-top: 8px; min-height: 18px; }
+  code { font-family: ui-monospace, monospace; background: #0a0b0f; border: 1px solid #2a2f3a; border-radius: 4px; padding: 2px 6px; font-size: 12px; color: #f8b700; }
+  .note { font-size: 12px; color: #8b8674; margin-top: 10px; }
+  #saveMsg { font-size: 12px; color: #57d977; margin-top: 8px; min-height: 18px; }
   #cidHint { margin: -6px 0 12px; }
-  a { color: #00f5d4; }
+  .wstat { font-size: 12px; margin: -4px 0 10px; min-height: 18px; }
+  .wstat.ok { color: #57d977; }
+  .wstat.warn { color: #f8b700; }
+  .wstat.bad { color: #ff5a5a; }
+  #wowMsg { font-size: 12px; color: #57d977; margin-top: 8px; min-height: 18px; }
+  #musicMsg { font-size: 12px; color: #57d977; margin-top: 8px; min-height: 18px; }
+  #musicMsg.err { color: #ff5a5a; }
+  .listlabel { font-size: 13px; color: #ddd6c4; margin: 14px 0 6px; font-weight: 600; }
+  .maprow { display: flex; gap: 6px; margin-bottom: 6px; }
+  .maprow input[type=text] { margin-bottom: 0; }
+  .maprow .nm { flex: 4; min-width: 0; }
+  .maprow .ur { flex: 7; min-width: 0; }
+  .maprow .xbtn { flex: none; background: transparent; color: #8b8674; border: 1px solid #2a2f3a; padding: 9px 11px; font-weight: 400; }
+  .maprow .xbtn:hover { color: #ff5a5a; border-color: #ff5a5a; }
+  .empty { font-size: 12px; color: #5a564a; margin: 0 0 8px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 4px; }
+  .chip { font-size: 12px; padding: 3px 10px; border-radius: 20px; border: 1px solid #2a2f3a; color: #ddd6c4; cursor: pointer; background: transparent; font-weight: 400; }
+  .chip:hover { border-color: #f8b700; color: #f8b700; }
+  a { color: #f8b700; }
 </style>
 </head>
 <body>
   <h1><span class="dot">●</span> Azeradio</h1>
   <p class="sub">WoW zones switch your Spotify. Set it up once, then forget it.</p>
+  <div class="bridge"><span id="bridgeDot" class="bdot"></span><span id="bridgeText">Starting…</span></div>
 
   <div class="card">
     <h2>Spotify</h2>
@@ -100,11 +121,35 @@
 
   <div class="card">
     <h2>Music</h2>
-    <p class="note" style="margin-top:0">Map zones to playlists in <code>mappings.json</code>. Edits apply on the next zone change, no restart needed.</p>
-    <div class="row">
-      <button class="ghost" id="openConfig">Open config folder</button>
-      <button class="ghost" id="openGuide">Setup guide</button>
-    </div>
+    <p class="note" style="margin-top:0">Most specific match wins: subzone, then zone, then instance, then fallback. Combat wins over all of them.</p>
+    <label for="combatUri">Combat playlist</label>
+    <input id="combatUri" type="text" placeholder="spotify:playlist:…" autocomplete="off" spellcheck="false">
+    <label for="fallbackUri">Fallback playlist</label>
+    <input id="fallbackUri" type="text" placeholder="spotify:playlist:…" autocomplete="off" spellcheck="false">
+    <div class="listlabel">Zones</div>
+    <div id="listZones"></div>
+    <button class="ghost small" data-add="zones">+ Add zone</button>
+    <div class="listlabel">Subzones</div>
+    <div id="listSubzones"></div>
+    <button class="ghost small" data-add="subzones">+ Add subzone</button>
+    <div class="listlabel">Instances</div>
+    <div id="listInstances"></div>
+    <button class="ghost small" data-add="instances">+ Add instance</button>
+    <div class="listlabel">Recently seen in game</div>
+    <div class="chips" id="recentChips"></div>
+    <p class="note">Click a name to start a row for it, then paste its playlist URI. Right-click a playlist in Spotify, Share, Copy Spotify URI.</p>
+    <div class="row"><button id="saveMusic">Save</button></div>
+    <div id="musicMsg"></div>
+    <details>
+      <summary>Advanced</summary>
+      <div style="margin-top:10px"></div>
+      <label for="deviceId">Spotify device ID (optional)</label>
+      <input id="deviceId" type="text" placeholder="pins playback to one device" autocomplete="off" spellcheck="false">
+      <div class="row">
+        <button class="ghost" id="openConfig">Open config folder</button>
+        <button class="ghost" id="openGuide">Setup guide</button>
+      </div>
+    </details>
   </div>
 
   <script src="app.js"></script>

@@ -5,11 +5,12 @@ use std::io::{Read, Seek, SeekFrom};
 use std::path::PathBuf;
 use std::time::Duration;
 
-#[derive(Debug, Default)]
-struct ZoneEvent {
+#[derive(Debug, Default, Clone, serde::Serialize)]
+pub struct ZoneEvent {
     zone: String,
     subzone: String,
     instance: String,
+    instance_name: String,
     combat: bool,
     why: String,
 }
@@ -34,6 +35,7 @@ fn parse_line(line: &str) -> Option<ZoneEvent> {
         zone: kv(line, "zone"),
         subzone: kv(line, "subzone"),
         instance: kv(line, "instance"),
+        instance_name: kv(line, "instanceName"),
         combat: kv(line, "combat") == "1",
         why: kv(line, "why"),
     })
@@ -57,12 +59,82 @@ fn pick_playlist<'a>(ev: &ZoneEvent, m: &'a config::Mappings) -> Option<&'a str>
             return Some(u);
         }
     }
-    if !ev.instance.is_empty() && ev.instance != "none" {
-        if let Some(u) = m.instances.get(&ev.instance) {
+    if !ev.instance_name.is_empty() {
+        if let Some(u) = m.instances.get(&ev.instance_name) {
             return Some(u);
         }
     }
     m.fallback_playlist.as_deref()
+}
+
+/// What the Settings status line shows.
+#[derive(Debug, Clone, Default, serde::Serialize)]
+pub struct BridgeStatus {
+    pub logs_watched: usize,
+    pub last_event: String,
+    pub last_error: String,
+}
+
+static RECENT: std::sync::OnceLock<std::sync::Mutex<Vec<ZoneEvent>>> =
+    std::sync::OnceLock::new();
+static STATUS: std::sync::OnceLock<std::sync::Mutex<BridgeStatus>> = std::sync::OnceLock::new();
+
+fn recent() -> &'static std::sync::Mutex<Vec<ZoneEvent>> {
+    RECENT.get_or_init(|| std::sync::Mutex::new(Vec::new()))
+}
+
+fn status() -> &'static std::sync::Mutex<BridgeStatus> {
+    STATUS.get_or_init(|| std::sync::Mutex::new(BridgeStatus::default()))
+}
+
+/// Zones the game has actually announced, newest first (max 20).
+/// Powers the "recently seen" shortcuts in Settings.
+pub fn recent_zones() -> Vec<ZoneEvent> {
+    recent().lock().map(|v| v.clone()).unwrap_or_default()
+}
+
+pub fn bridge_status() -> BridgeStatus {
+    status().lock().map(|s| s.clone()).unwrap_or_default()
+}
+
+fn event_label(ev: &ZoneEvent) -> String {
+    let mut name = if !ev.subzone.is_empty() && ev.subzone != ev.zone {
+        format!("{} ({})", ev.subzone, ev.zone)
+    } else if !ev.zone.is_empty() {
+        ev.zone.clone()
+    } else if !ev.instance_name.is_empty() {
+        format!("instance: {}", ev.instance_name)
+    } else {
+        "unknown".to_string()
+    };
+    if ev.combat {
+        name = format!("[combat] {name}");
+    }
+    name
+}
+
+fn note_event(ev: &ZoneEvent) {
+    if let Ok(mut r) = recent().lock() {
+        r.retain(|x| x.zone != ev.zone || x.subzone != ev.subzone || x.instance_name != ev.instance_name);
+        r.insert(0, ev.clone());
+        r.truncate(20);
+    }
+    if let Ok(mut s) = status().lock() {
+        s.last_event = event_label(ev);
+        s.last_error.clear();
+    }
+}
+
+fn note_logs(n: usize) {
+    if let Ok(mut s) = status().lock() {
+        s.logs_watched = n;
+    }
+}
+
+fn note_error(e: &str) {
+    if let Ok(mut s) = status().lock() {
+        s.last_error = e.to_string();
+    }
 }
 
 fn handle(
@@ -96,6 +168,7 @@ fn watch() -> Result<(), String> {
         // Re-resolved every tick so Settings edits and newly enabled chat
         // logging take effect without a restart.
         let logs = wow::active_logs(&config::load_wow());
+        note_logs(logs.len());
         if logs.is_empty() {
             // Remind at most every ~30s so the console doesn't drown.
             if ticks % 60 == 1 {
@@ -124,11 +197,13 @@ fn watch() -> Result<(), String> {
             *p = len;
             for line in buf.lines() {
                 let Some(ev) = parse_line(line) else { continue };
+                note_event(&ev);
                 // Reloaded per event so editing mappings.json takes effect
                 // on the next zone change. No restart needed.
                 let mappings = config::load_mappings();
                 if let Err(e) = handle(&ev, &mut auth, &mappings, &mut current) {
                     eprintln!("[azeradio] {e}");
+                    note_error(&e);
                 }
             }
         }
@@ -142,7 +217,58 @@ pub fn run() {
     loop {
         if let Err(e) = watch() {
             eprintln!("[azeradio] watcher stopped: {e}");
+            note_error(&format!("watcher stopped: {e}"));
         }
         std::thread::sleep(Duration::from_secs(5));
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::collections::HashMap;
+
+    fn mappings() -> config::Mappings {
+        config::Mappings {
+            zones: HashMap::from([("Orgrimmar".into(), "spotify:playlist:zone".into())]),
+            subzones: HashMap::from([("Valdrakken".into(), "spotify:playlist:sub".into())]),
+            instances: HashMap::from([("Amirdrassil".into(), "spotify:playlist:inst".into())]),
+            combat_playlist: Some("spotify:playlist:combat".into()),
+            fallback_playlist: Some("spotify:playlist:fallback".into()),
+            device_id: None,
+        }
+    }
+
+    #[test]
+    fn parses_line_with_instance_name() {
+        let ev = parse_line("[AZERADIO] zone=\"X\" subzone=\"Y\" instance=\"raid\" instanceName=\"Amirdrassil\" instanceID=\"2\" combat=\"0\" why=\"zone\"").unwrap();
+        assert_eq!(ev.instance_name, "Amirdrassil");
+        assert_eq!(ev.zone, "X");
+        assert!(!ev.combat);
+    }
+
+    #[test]
+    fn parses_old_line_without_instance_name() {
+        let ev = parse_line("[AZERADIO] zone=\"X\" subzone=\"\" instance=\"raid\" instanceID=\"2\" combat=\"1\" why=\"combat_start\"").unwrap();
+        assert_eq!(ev.instance_name, "");
+        assert!(ev.combat);
+    }
+
+    #[test]
+    fn ignores_non_azeradio_lines() {
+        assert!(parse_line("just chat").is_none());
+    }
+
+    #[test]
+    fn most_specific_match_wins() {
+        let m = mappings();
+        let ev = ZoneEvent { zone: "Orgrimmar".into(), subzone: "Valdrakken".into(), ..Default::default() };
+        assert_eq!(pick_playlist(&ev, &m), Some("spotify:playlist:sub"));
+        let ev = ZoneEvent { instance_name: "Amirdrassil".into(), ..Default::default() };
+        assert_eq!(pick_playlist(&ev, &m), Some("spotify:playlist:inst"));
+        let ev = ZoneEvent { zone: "Nowhere".into(), ..Default::default() };
+        assert_eq!(pick_playlist(&ev, &m), Some("spotify:playlist:fallback"));
+        let ev = ZoneEvent { zone: "Orgrimmar".into(), subzone: "Valdrakken".into(), combat: true, ..Default::default() };
+        assert_eq!(pick_playlist(&ev, &m), Some("spotify:playlist:combat"));
     }
 }

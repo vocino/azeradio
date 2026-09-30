@@ -5,7 +5,7 @@
 --
 -- What it does: on every zone change (and, optionally, combat start/end) it
 -- prints one machine-readable line into chat:
---   [AZERADIO] zone="..." subzone="..." instance="..." instanceID="..." combat="0|1" why="..."
+--   [AZERADIO] zone="..." subzone="..." instance="..." instanceName="..." instanceID="..." combat="0|1" why="..."
 -- The Azeradio tray app tails Logs/WoWChatLog.txt, parses those lines, and
 -- switches Spotify playlists. Turn on chat logging in game for this to work.
 
@@ -28,14 +28,15 @@ end
 local function announce(why)
     local zone = GetZoneText() or ""
     local subzone = GetMinimapZoneText() or ""
-    local _, instanceType, _, _, _, _, _, instanceID = GetInstanceInfo()
+    local instanceName, instanceType, _, _, _, _, _, instanceID = GetInstanceInfo()
     local combat = InCombatLockdown() and "1" or "0"
     DEFAULT_CHAT_FRAME:AddMessage(
-        ('%s zone="%s" subzone="%s" instance="%s" instanceID="%s" combat="%s" why="%s"'):format(
+        ('%s zone="%s" subzone="%s" instance="%s" instanceName="%s" instanceID="%s" combat="%s" why="%s"'):format(
             PREFIX,
             esc(zone),
             esc(subzone),
             esc(instanceType or "none"),
+            esc(instanceName or ""),
             esc(instanceID or 0),
             combat,
             why

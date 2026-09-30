@@ -25,7 +25,7 @@ The version lives in the tag. Do not bump version files by hand; the workflows s
 ## Before tagging
 
 - Addon: `luac -p addon/Azeradio/core.lua` must pass.
-- Tray: the Rust must compile. Smart App Control on the dev machine blocks locally compiled build scripts, so the CI build is the check. If it fails, see below.
+- Tray: the Rust must compile. Smart App Control on the dev machine blocks locally compiled build scripts, so CI is the check: tray-check runs unit tests on every push, and the full build runs on tag. If either fails, see below.
 - Docs covering changed behavior (`docs/SETUP.md`, `README.md`) must match the tagged code.
 - Commit messages stay conventional (`feat:`, `fix:`, `docs:`, `chore:`); the commit hook enforces this.
 

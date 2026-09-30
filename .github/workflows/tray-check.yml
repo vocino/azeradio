@@ -1,0 +1,21 @@
+name: tray-check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: tray
+
+      - name: Test
+        run: cargo test --manifest-path tray/Cargo.toml

@@ -24,7 +24,7 @@ This is ToS-safe: the game writes the log file itself, and the tray app only use
 
 ## Map zones to playlists
 
-Right-click the tray icon, open the config folder, edit `mappings.json`:
+Right-click the tray icon and open Settings → Music: combat and fallback playlists up top, one row per zone, subzone, or instance below. Play first and the names you visit appear as click-to-add shortcuts. The same data lives in `mappings.json`, shaped like this:
 
 ```json
 {

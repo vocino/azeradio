@@ -4,7 +4,7 @@ use std::path::PathBuf;
 
 /// Zone/subzone/instance name -> Spotify playlist URI, e.g.
 /// "The Waking Shores" -> "spotify:playlist:37i9dQZF1DX3..."
-#[derive(Debug, Deserialize, Default)]
+#[derive(Debug, Serialize, Deserialize, Default)]
 pub struct Mappings {
     #[serde(default)]
     pub zones: HashMap<String, String>,
@@ -16,8 +16,8 @@ pub struct Mappings {
     pub combat_playlist: Option<String>,
     #[serde(default)]
     pub fallback_playlist: Option<String>,
-    /// Optional: pin playback to one device. Find yours via the
-    /// "devices" section in docs/SETUP.md.
+    /// Optional: pin playback to one Spotify Connect device.
+    /// Paste the device id (Advanced in Settings); empty means "wherever Spotify plays".
     #[serde(default)]
     pub device_id: Option<String>,
 }
@@ -79,6 +79,14 @@ pub fn save_wow(wow: &WowPaths) {
     std::fs::create_dir_all(&dir).ok();
     if let Ok(s) = serde_json::to_string_pretty(wow) {
         let _ = std::fs::write(dir.join("wow.json"), s);
+    }
+}
+
+pub fn save_mappings(m: &Mappings) {
+    let dir = config_dir();
+    std::fs::create_dir_all(&dir).ok();
+    if let Ok(s) = serde_json::to_string_pretty(m) {
+        let _ = std::fs::write(dir.join("mappings.json"), s);
     }
 }
 
