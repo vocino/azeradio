@@ -36,6 +36,18 @@ pub struct SpotifyAuth {
     pub expires_at: u64,
 }
 
+/// Per-flavor WoW install directories: the flavor folder itself, e.g.
+/// `D:\Blizzard\World of Warcraft\_retail_`. Empty string = auto-detect.
+#[derive(Debug, Serialize, Deserialize, Default)]
+pub struct WowPaths {
+    #[serde(default)]
+    pub retail: String,
+    #[serde(default)]
+    pub classic: String,
+    #[serde(default)]
+    pub forever: String,
+}
+
 pub fn config_dir() -> PathBuf {
     dirs::config_dir()
         .unwrap_or_else(|| PathBuf::from("."))
@@ -56,6 +68,18 @@ pub fn load_mappings() -> Mappings {
 
 pub fn load_auth() -> SpotifyAuth {
     read_json("spotify.json")
+}
+
+pub fn load_wow() -> WowPaths {
+    read_json("wow.json")
+}
+
+pub fn save_wow(wow: &WowPaths) {
+    let dir = config_dir();
+    std::fs::create_dir_all(&dir).ok();
+    if let Ok(s) = serde_json::to_string_pretty(wow) {
+        let _ = std::fs::write(dir.join("wow.json"), s);
+    }
 }
 
 pub fn save_auth(auth: &SpotifyAuth) {

@@ -1,4 +1,5 @@
-use crate::{config, spotify};
+use crate::{config, spotify, wow};
+use std::collections::HashMap;
 use std::fs::File;
 use std::io::{Read, Seek, SeekFrom};
 use std::path::PathBuf;
@@ -36,39 +37,6 @@ fn parse_line(line: &str) -> Option<ZoneEvent> {
         combat: kv(line, "combat") == "1",
         why: kv(line, "why"),
     })
-}
-
-fn find_log() -> Result<PathBuf, String> {
-    if let Ok(p) = std::env::var("AZERADIO_WOW_LOG") {
-        return Ok(p.into());
-    }
-    let mut candidates: Vec<String> = Vec::new();
-    #[cfg(target_os = "windows")]
-    for drive in ["C:", "D:"] {
-        for base in [
-            "Program Files\\World of Warcraft",
-            "Program Files (x86)\\World of Warcraft",
-        ] {
-            for flavor in ["_retail_", "_classic_beta_"] {
-                candidates.push(format!(
-                    "{drive}\\{base}\\{flavor}\\Logs\\WoWChatLog.txt"
-                ));
-            }
-        }
-    }
-    #[cfg(target_os = "macos")]
-    for flavor in ["_retail_", "_classic_beta_"] {
-        candidates.push(format!(
-            "/Applications/World of Warcraft/{flavor}/Logs/WoWChatLog.txt"
-        ));
-    }
-    for c in candidates {
-        let p = PathBuf::from(&c);
-        if p.exists() {
-            return Ok(p);
-        }
-    }
-    Err("WoW chat log not found. Enable chat logging in game or set AZERADIO_WOW_LOG.".into())
 }
 
 /// Most specific match wins: subzone, then zone, then instance, then fallback.
@@ -115,40 +83,57 @@ fn handle(
 
 fn watch() -> Result<(), String> {
     config::ensure_sample_files();
-    let log = find_log()?;
     let mut auth = config::load_auth();
-    if auth.access_token.is_empty() && auth.refresh_token.is_empty() {
-        // First run: log in now so the browser opens at startup, not mid-pull.
-        spotify::oauth_flow(&mut auth)?;
-    }
-
-    // Start at the end of the log so old lines do not replay.
-    let mut pos = std::fs::metadata(&log).map(|m| m.len()).unwrap_or(0);
+    // Read offset per log file. A file seen for the first time starts at
+    // its end, so enabling chat logging mid-run doesn't replay history.
+    let mut pos: HashMap<PathBuf, u64> = HashMap::new();
     let mut current = String::new();
+    let mut ticks: u64 = 0;
 
     loop {
         std::thread::sleep(Duration::from_millis(500));
-        let len = std::fs::metadata(&log).map(|m| m.len()).unwrap_or(0);
-        if len < pos {
-            pos = 0; // log was rotated; start over
-        }
-        if len <= pos {
+        ticks += 1;
+        // Re-resolved every tick so Settings edits and newly enabled chat
+        // logging take effect without a restart.
+        let logs = wow::active_logs(&config::load_wow());
+        if logs.is_empty() {
+            // Remind at most every ~30s so the console doesn't drown.
+            if ticks % 60 == 1 {
+                eprintln!("[azeradio] no WoW chat logs found — set install paths in Settings, or enable chat logging in game with /console chatLog 1");
+            }
             continue;
         }
-        let mut f = File::open(&log).map_err(|e| e.to_string())?;
-        f.seek(SeekFrom::Start(pos)).map_err(|e| e.to_string())?;
-        let mut buf = String::new();
-        f.read_to_string(&mut buf).map_err(|e| e.to_string())?;
-        pos = len;
-        for line in buf.lines() {
-            let Some(ev) = parse_line(line) else { continue };
-            // Reloaded per event so editing mappings.json takes effect
-            // on the next zone change. No restart needed.
-            let mappings = config::load_mappings();
-            if let Err(e) = handle(&ev, &mut auth, &mappings, &mut current) {
-                eprintln!("[azeradio] {e}");
+        if auth.access_token.is_empty() && auth.refresh_token.is_empty() {
+            // First run: log in now so the browser opens at startup, not mid-pull.
+            spotify::oauth_flow(&mut auth)?;
+        }
+
+        for log in &logs {
+            let len = std::fs::metadata(log).map(|m| m.len()).unwrap_or(0);
+            let p = pos.entry(log.clone()).or_insert(len);
+            if len < *p {
+                *p = 0; // log was rotated; start over
+            }
+            if len <= *p {
+                continue;
+            }
+            let mut f = File::open(log).map_err(|e| e.to_string())?;
+            f.seek(SeekFrom::Start(*p)).map_err(|e| e.to_string())?;
+            let mut buf = String::new();
+            f.read_to_string(&mut buf).map_err(|e| e.to_string())?;
+            *p = len;
+            for line in buf.lines() {
+                let Some(ev) = parse_line(line) else { continue };
+                // Reloaded per event so editing mappings.json takes effect
+                // on the next zone change. No restart needed.
+                let mappings = config::load_mappings();
+                if let Err(e) = handle(&ev, &mut auth, &mappings, &mut current) {
+                    eprintln!("[azeradio] {e}");
+                }
             }
         }
+        // Forget deleted logs so a recreated file starts at its end.
+        pos.retain(|k, _| logs.contains(k));
     }
 }
 

@@ -38,6 +38,7 @@ Done. Azeradio refreshes its own login from here on. If Spotify ever logs you ou
 1. Download the latest `Azeradio-x.y.z.zip` from Releases and unzip it into your `Interface/AddOns` folder. The same zip works for Midnight (`_retail_`) and Forever (`_classic_beta_`).
 2. In game, type `/console chatLog 1` and press enter. This switches on the chat log file Azeradio reads. Once is enough.
 3. Log out and back in, or type `/reload`. Then type `/azeradio test`. If an `[AZERADIO]` line appears in chat, the bridge is working.
+4. Each client needs step 2 done separately. If a client shows as missing in tray Settings → World of Warcraft, paste its folder path there; leave a field empty to auto-detect.
 
 ## Part 4: map your music (the fun part)
 

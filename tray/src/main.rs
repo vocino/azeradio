@@ -1,6 +1,7 @@
 mod bridge;
 mod config;
 mod spotify;
+mod wow;
 
 use tauri::{
     menu::{Menu, MenuItem, PredefinedMenuItem},
@@ -12,6 +13,7 @@ use tauri::{
 struct Status {
     client_id_set: bool,
     connected: bool,
+    client_id_hint: String,
 }
 
 #[tauri::command]
@@ -20,6 +22,7 @@ fn get_status() -> Status {
     Status {
         client_id_set: !auth.client_id.is_empty(),
         connected: !auth.access_token.is_empty(),
+        client_id_hint: client_hint(&auth.client_id),
     }
 }
 
@@ -35,6 +38,42 @@ fn save_client_id(client_id: String) -> Result<(), String> {
     auth.client_id = id;
     config::save_auth(&auth);
     Ok(())
+}
+
+fn client_hint(id: &str) -> String {
+    if id.len() >= 8 && id.is_ascii() {
+        format!("{}…{}", &id[..4], &id[id.len() - 4..])
+    } else {
+        String::new()
+    }
+}
+
+#[derive(serde::Serialize)]
+struct WowConfig {
+    retail: wow::FlavorState,
+    classic: wow::FlavorState,
+    forever: wow::FlavorState,
+}
+
+#[tauri::command]
+fn get_wow() -> WowConfig {
+    let w = config::load_wow();
+    WowConfig {
+        retail: wow::state("retail", &w.retail),
+        classic: wow::state("classic", &w.classic),
+        forever: wow::state("forever", &w.forever),
+    }
+}
+
+/// Empty string per flavor = auto-detect. Trims, so clearing a field
+/// restores detection for that flavor.
+#[tauri::command]
+fn save_wow(retail: String, classic: String, forever: String) {
+    config::save_wow(&config::WowPaths {
+        retail: retail.trim().to_string(),
+        classic: classic.trim().to_string(),
+        forever: forever.trim().to_string(),
+    });
 }
 
 #[tauri::command]
@@ -65,6 +104,8 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             get_status,
             save_client_id,
+            get_wow,
+            save_wow,
             open_config_folder,
             open_dashboard,
             open_guide
