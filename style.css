@@ -1,0 +1,110 @@
+:root {
+  --bg: #0e0f13;
+  --panel: #16181f;
+  --line: #262933;
+  --text: #e8e6e1;
+  --dim: #9a97a3;
+  --accent: #00ccff;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.55;
+}
+
+header, main, footer {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+header { padding-top: 56px; }
+
+h1 {
+  font-size: 2.6rem;
+  margin: 0 0 4px;
+  letter-spacing: 0.01em;
+}
+
+.tagline {
+  font-size: 1.25rem;
+  color: var(--accent);
+  margin: 0 0 20px;
+}
+
+header p { max-width: 44rem; color: var(--dim); }
+header p:first-of-type { color: var(--text); }
+
+.links a {
+  display: inline-block;
+  margin: 8px 12px 0 0;
+  padding: 8px 14px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--text);
+  text-decoration: none;
+  background: var(--panel);
+}
+
+.links a:hover { border-color: var(--accent); }
+
+main h2 {
+  font-size: 1.4rem;
+  margin: 48px 0 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 14px;
+}
+
+.card img {
+  width: 100%;
+  height: auto;
+  border-radius: 6px;
+  display: block;
+}
+
+.card h3 { margin: 12px 0 6px; font-size: 1.15rem; }
+
+.card p { margin: 0 0 12px; color: var(--dim); font-size: 0.95rem; }
+
+.card iframe {
+  width: 100%;
+  height: 152px;
+  border: 0;
+  border-radius: 8px;
+}
+
+.card .open { margin: 10px 0 2px; }
+.card .open a { color: var(--accent); text-decoration: none; }
+.card .open a:hover { text-decoration: underline; }
+
+.more { color: var(--dim); margin: 36px 0 0; }
+
+footer {
+  margin-top: 40px;
+  padding-top: 20px;
+  padding-bottom: 48px;
+  border-top: 1px solid var(--line);
+  color: var(--dim);
+  font-size: 0.9rem;
+}
+
+footer a { color: var(--accent); text-decoration: none; }
+footer a:hover { text-decoration: underline; }
