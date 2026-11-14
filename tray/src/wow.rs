@@ -2,9 +2,9 @@ use crate::config;
 use std::path::{Path, PathBuf};
 
 /// Flavor key -> (client folder name, `.flavor.info` product id).
-const FLAVORS: [(&str, &str, &str); 3] = [
-    ("retail", "_retail_", "wow"),
-    ("classic", "_classic_", "wow_classic"),
+/// Azeradio is Forever-only; the table stays so the one flavor is
+/// resolved the same way everywhere.
+const FLAVORS: [(&str, &str, &str); 1] = [
     ("forever", "_classic_beta_", "wow_classic_beta"),
 ];
 
@@ -13,7 +13,7 @@ pub fn flavor_meta(name: &str) -> (&'static str, &'static str) {
         .iter()
         .find(|(n, _, _)| *n == name)
         .map(|(_, d, id)| (*d, *id))
-        .unwrap_or(("_retail_", "wow"))
+        .unwrap_or(("_classic_beta_", "wow_classic_beta"))
 }
 
 /// One row of the Settings → World of Warcraft card.
@@ -34,7 +34,7 @@ pub fn chat_log(flavor_dir: &Path) -> PathBuf {
 }
 
 /// `.flavor.info` is two lines (a header, then the product id).
-/// The id is what distinguishes retail from classic from forever.
+/// The id is what confirms a folder is the Forever client.
 fn flavor_id(flavor_dir: &Path) -> String {
     std::fs::read_to_string(flavor_dir.join(".flavor.info"))
         .ok()
@@ -75,7 +75,7 @@ fn bnet_install_root() -> Option<PathBuf> {
 /// Find a flavor folder without any user configuration:
 /// Battle.net's own install root first, then the usual suspects.
 /// Strict: the folder must carry the right flavor id, so a stray
-/// `_retail_` from another Blizzard game never matches.
+/// folder from another Blizzard game never matches.
 pub fn auto_detect(dir_name: &str, want_id: &str) -> Option<PathBuf> {
     let mut roots: Vec<PathBuf> = Vec::new();
     if let Some(r) = bnet_install_root() {
@@ -149,8 +149,8 @@ pub fn state(name: &str, manual: &str) -> FlavorState {
 }
 
 /// Every chat log to watch right now. `AZERADIO_WOW_LOG` overrides
-/// everything (one file, legacy escape hatch); otherwise one live log
-/// per flavor, so retail, classic and forever can all be watched at once.
+/// everything (one file, legacy escape hatch); otherwise the Forever
+/// client's log.
 pub fn active_logs(cfg: &config::WowPaths) -> Vec<PathBuf> {
     if let Ok(p) = std::env::var("AZERADIO_WOW_LOG") {
         let p = PathBuf::from(p);
@@ -158,8 +158,6 @@ pub fn active_logs(cfg: &config::WowPaths) -> Vec<PathBuf> {
     }
     let mut logs = Vec::new();
     for (name, manual) in [
-        ("retail", cfg.retail.as_str()),
-        ("classic", cfg.classic.as_str()),
         ("forever", cfg.forever.as_str()),
     ] {
         if let (Some(d), _) = resolve(name, manual) {
@@ -185,7 +183,7 @@ mod tests {
         let base = std::env::temp_dir().join("azeradio-test-flavor");
         wipe(&base);
         std::fs::create_dir_all(base.join("Logs")).unwrap();
-        let (dir, src) = resolve("retail", base.to_str().unwrap());
+        let (dir, src) = resolve("forever", base.to_str().unwrap());
         assert_eq!(src, "manual");
         assert_eq!(dir, Some(base.clone()));
         wipe(&base);
@@ -195,10 +193,10 @@ mod tests {
     fn manual_install_root_descends_to_flavor() {
         let root = std::env::temp_dir().join("azeradio-test-root");
         wipe(&root);
-        let flav = root.join("_retail_");
+        let flav = root.join("_classic_beta_");
         std::fs::create_dir_all(flav.join("Logs")).unwrap();
-        std::fs::write(flav.join(".flavor.info"), "Product Flavor!STRING:0\nwow\n").unwrap();
-        let (dir, src) = resolve("retail", root.to_str().unwrap());
+        std::fs::write(flav.join(".flavor.info"), "Product Flavor!STRING:0\nwow_classic_beta\n").unwrap();
+        let (dir, src) = resolve("forever", root.to_str().unwrap());
         assert_eq!(src, "manual");
         assert_eq!(dir, Some(flav));
         wipe(&root);
@@ -206,7 +204,7 @@ mod tests {
 
     #[test]
     fn manual_missing_path_resolves_none() {
-        let (dir, src) = resolve("retail", "D:\\definitely\\not\\here\\_retail_");
+        let (dir, src) = resolve("forever", "D:\\definitely\\not\\here\\_classic_beta_");
         assert_eq!(src, "manual");
         assert!(dir.is_none());
     }

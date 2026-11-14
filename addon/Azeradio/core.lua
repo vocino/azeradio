@@ -1,7 +1,5 @@
 -- Azeradio core.lua
--- Shared by Azeradio.toc (Midnight) and Azeradio_Forever.toc (Forever).
--- The client loads whichever .toc has the highest Interface number that does
--- not exceed its own, so one folder serves both games.
+-- Loaded by Azeradio_Forever.toc. Forever only (Interface 16001).
 --
 -- What it does: on every zone change (and, optionally, combat start/end) it
 -- writes one machine-readable line to the chat log file (never shown on screen):

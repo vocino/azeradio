@@ -183,7 +183,7 @@ pub fn activity() -> Vec<LogEntry> {
 }
 
 /// Short label for a watched log: the flavor folder name without
-/// underscores ("retail"), or "custom" for the env-var override.
+/// underscores, or "custom" for the env-var override.
 fn log_label(p: &Path) -> String {
     p.parent()
         .and_then(|d| d.file_name())

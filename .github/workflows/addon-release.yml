@@ -18,7 +18,7 @@ jobs:
         run: |
           VERSION="${GITHUB_REF_NAME#addon/v}"
           sed -i "s/^## Version:.*/## Version: ${VERSION}/" \
-            addon/Azeradio/Azeradio.toc addon/Azeradio/Azeradio_Forever.toc
+            addon/Azeradio/Azeradio_Forever.toc
           grep -h "## Version" addon/Azeradio/*.toc
 
       - name: Zip addon

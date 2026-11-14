@@ -125,8 +125,6 @@ fn client_hint(id: &str) -> String {
 
 #[derive(serde::Serialize)]
 struct WowConfig {
-    retail: wow::FlavorState,
-    classic: wow::FlavorState,
     forever: wow::FlavorState,
 }
 
@@ -134,19 +132,15 @@ struct WowConfig {
 fn get_wow() -> WowConfig {
     let w = config::load_wow();
     WowConfig {
-        retail: wow::state("retail", &w.retail),
-        classic: wow::state("classic", &w.classic),
         forever: wow::state("forever", &w.forever),
     }
 }
 
-/// Empty string per flavor = auto-detect. Trims, so clearing a field
-/// restores detection for that flavor.
+/// Empty string = auto-detect. Trims, so clearing the field
+/// restores detection.
 #[tauri::command]
-fn save_wow(retail: String, classic: String, forever: String) {
+fn save_wow(forever: String) {
     config::save_wow(&config::WowPaths {
-        retail: retail.trim().to_string(),
-        classic: classic.trim().to_string(),
         forever: forever.trim().to_string(),
     });
 }

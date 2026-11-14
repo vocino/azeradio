@@ -36,14 +36,10 @@ pub struct SpotifyAuth {
     pub expires_at: u64,
 }
 
-/// Per-flavor WoW install directories: the flavor folder itself, e.g.
-/// `D:\Blizzard\World of Warcraft\_retail_`. Empty string = auto-detect.
+/// WoW install directory: the Forever client folder itself, e.g.
+/// `D:\Blizzard\World of Warcraft\_classic_beta_`. Empty string = auto-detect.
 #[derive(Debug, Serialize, Deserialize, Default)]
 pub struct WowPaths {
-    #[serde(default)]
-    pub retail: String,
-    #[serde(default)]
-    pub classic: String,
     #[serde(default)]
     pub forever: String,
 }

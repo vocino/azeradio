@@ -54,7 +54,7 @@ document.getElementById('dashLink').addEventListener('click', (e) => {
 
 // --- World of Warcraft ---
 
-const FLAVORS = ['retail', 'classic', 'forever'];
+const FLAVORS = ['forever'];
 const cap = (s) => s[0].toUpperCase() + s.slice(1);
 
 function wowStatusText(s) {
@@ -95,8 +95,6 @@ document.getElementById('saveWow').addEventListener('click', async () => {
   msg.textContent = '';
   try {
     await invoke('save_wow', {
-      retail: document.getElementById('wowRetail').value,
-      classic: document.getElementById('wowClassic').value,
       forever: document.getElementById('wowForever').value,
     });
     msg.textContent = 'Saved. The watcher picks it up within seconds.';
