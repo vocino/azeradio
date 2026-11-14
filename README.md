@@ -26,7 +26,7 @@ Older versions live under [Releases](https://github.com/vocino/azeradio/releases
 
 ## Map zones to playlists
 
-Right-click the tray icon and open Settings → Music: combat and fallback playlists up top, one row per zone, subzone, or instance below. Play first and the names you visit appear as click-to-add shortcuts. The same data lives in `mappings.json`, shaped like this:
+Azeradio ships with the [Azeroth soundtrack library](https://vocino.github.io/azeradio/) already mapped: the six capitals plus Desolace, Hillsbrad Foothills, and Silverpine Forest play out of the box, and zones with no mapping hold the last playlist. Remap any of them in Settings → Music: right-click the tray icon and open Settings → Music: combat and fallback playlists up top, one row per zone, subzone, or instance below. Play first and the names you visit appear as click-to-add shortcuts. The same data lives in `mappings.json`, shaped like this:
 
 ```json
 {

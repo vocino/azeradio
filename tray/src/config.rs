@@ -105,14 +105,26 @@ pub fn ensure_sample_files() {
 
     let mappings = dir.join("mappings.json");
     if !mappings.exists() {
+        // Ships with the Azeroth soundtrack library mapped, so zone
+        // switching works out of the box. Users can remap any zone to
+        // their own playlists. Library: https://vocino.github.io/azeradio/
         let sample = serde_json::json!({
             "zones": {
-                "Orgrimmar": "spotify:playlist:PASTE_PLAYLIST_URI_HERE"
+                "Stormwind City": "spotify:playlist:0jvepuHBLsYUE9uDFDidmC",
+                "Stormwind": "spotify:playlist:0jvepuHBLsYUE9uDFDidmC",
+                "Ironforge": "spotify:playlist:3qnAcoMsZwyDfIa34Wji4M",
+                "Darnassus": "spotify:playlist:732puUrblOQ89lssElONSH",
+                "Orgrimmar": "spotify:playlist:0S4BE6tB2qGq0w6jO4V3Ld",
+                "Thunder Bluff": "spotify:playlist:6ab2nDtflakyfUvyMHmtv5",
+                "Undercity": "spotify:playlist:4PgSkzbfksipfnCImj1YUf",
+                "Desolace": "spotify:playlist:6eppKfgkPh0BpsRy7ZIh3K",
+                "Hillsbrad Foothills": "spotify:playlist:1pIv8zFy7bTCrzdhfz7hCj",
+                "Silverpine Forest": "spotify:playlist:3XwiIfmaEv9uddH4JMQEYG"
             },
             "subzones": {},
             "instances": {},
-            "combat_playlist": "spotify:playlist:PASTE_COMBAT_PLAYLIST_HERE",
-            "fallback_playlist": "spotify:playlist:PASTE_DEFAULT_PLAYLIST_HERE",
+            "combat_playlist": null,
+            "fallback_playlist": null,
             "device_id": null
         });
         let _ = std::fs::write(
