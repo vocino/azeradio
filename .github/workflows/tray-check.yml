@@ -19,3 +19,20 @@ jobs:
 
       - name: Test
         run: cargo test --manifest-path tray/Cargo.toml
+
+  addon:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Lua
+        run: sudo apt-get update && sudo apt-get install -y lua5.4
+
+      - name: Addon syntax
+        run: luac5.4 -p addon/Azeradio/core.lua
+
+      - name: Addon contract tests
+        run: lua5.4 addon/tests/test_core.lua
+
+      - name: Zone library
+        run: node scripts/check-library.js

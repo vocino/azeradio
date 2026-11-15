@@ -52,3 +52,4 @@ Both publish to GitHub Releases automatically. Full process: `docs/RELEASING.md`
 - `addon/Azeradio/`: the WoW addon (Forever)
 - `tray/`: the Tauri tray bridge (Rust)
 - `docs/SETUP.md`: Spotify setup and config reference
+- `docs/TESTING.md`: how to test locally (`.\scripts\test.ps1`)

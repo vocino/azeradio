@@ -28,7 +28,11 @@ Each release build also refreshes a rolling `latest` release per product (`addon
 
 ## Before tagging
 
-- Addon: `luac -p addon/Azeradio/core.lua` must pass.
+Run `.\scripts\test.ps1` from the repo root: no section may FAIL. Details in
+`docs/TESTING.md`. The parts behind that command:
+
+- Addon: `luac -p addon/Azeradio/core.lua` plus the `addon/tests/` contract
+  tests must pass (both also run in CI).
 - Tray: the Rust must compile. Smart App Control on the dev machine blocks locally compiled build scripts, so CI is the check: tray-check runs unit tests on every push, and the full build runs on tag. If either fails, see below.
 - Docs covering changed behavior (`docs/SETUP.md`, `README.md`) must match the tagged code.
 - Commit messages stay conventional (`feat:`, `fix:`, `docs:`, `chore:`); the commit hook enforces this.

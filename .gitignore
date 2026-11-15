@@ -7,3 +7,5 @@ tray/gen/
 spotify.json
 mappings.json
 wow.json
+# Stray directory literally named %SystemDrive% (Windows cache copies); never commit.
+%SystemDrive%/
