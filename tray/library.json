@@ -1,0 +1,18 @@
+{
+    "zones": {
+        "Stormwind City": "spotify:playlist:0jvepuHBLsYUE9uDFDidmC",
+        "Stormwind": "spotify:playlist:0jvepuHBLsYUE9uDFDidmC",
+        "Ironforge": "spotify:playlist:3qnAcoMsZwyDfIa34Wji4M",
+        "Darnassus": "spotify:playlist:732puUrblOQ89lssElONSH",
+        "Orgrimmar": "spotify:playlist:0S4BE6tB2qGq0w6jO4V3Ld",
+        "Thunder Bluff": "spotify:playlist:6ab2nDtflakyfUvyMHmtv5",
+        "Undercity": "spotify:playlist:4PgSkzbfksipfnCImj1YUf",
+        "Desolace": "spotify:playlist:6eppKfgkPh0BpsRy7ZIh3K",
+        "Hillsbrad Foothills": "spotify:playlist:1pIv8zFy7bTCrzdhfz7hCj",
+        "Silverpine Forest": "spotify:playlist:3XwiIfmaEv9uddH4JMQEYG"
+    },
+    "subzones": {},
+    "instances": {},
+    "combat_playlist": null,
+    "fallback_playlist": null
+}

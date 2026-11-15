@@ -211,6 +211,7 @@ fn handle(
 
 fn watch() -> Result<(), String> {
     config::ensure_sample_files();
+    config::sync_library();
     let mut auth = config::load_auth();
     // Read offset per log file. A file seen for the first time starts at
     // its end, so enabling chat logging mid-run doesn't replay history.
@@ -224,6 +225,11 @@ fn watch() -> Result<(), String> {
         ticks += 1;
         // Re-resolved every tick so Settings edits and newly enabled chat
         // logging take effect without a restart.
+        // The library grows over time; re-sync at most once a day so new
+        // zone playlists arrive without a restart or reinstall.
+        if ticks % 172800 == 0 {
+            config::sync_library();
+        }
         let logs = wow::active_logs(&config::load_wow());
         note_logs(logs.len());
         if prev_logs.as_ref() != Some(&logs) {
