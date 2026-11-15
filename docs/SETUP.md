@@ -35,7 +35,7 @@ Done. Azeradio refreshes its own login from here on. If Spotify ever logs you ou
 
 ## Part 3: WoW (about 2 minutes, once)
 
-1. Download [Azeradio.zip](https://github.com/vocino/azeradio/releases/download/addon/latest/Azeradio.zip) (always the newest) and unzip it into the Forever client's `Interface/AddOns` folder (`_classic_beta_`). Azeradio is Forever-only.
+1. Download [Azeradio.zip](https://github.com/vocino/azeradio/releases/download/addon/latest/Azeradio.zip) (always the newest) and unzip it into the Forever client's `Interface/AddOns` folder (`_forever_`). Azeradio is Forever-only.
 2. In game, type `/azeradio log on` and press enter. This switches on the chat log file Azeradio reads. Once is enough. (`/azeradio log` reports the current state any time.)
 3. Quit the game completely and restart it — `/reload` alone may not switch logging on. Then type `/azeradio test`. Chat prints a short confirmation (bridge lines themselves are invisible by design); the tray Settings status line should show your zone as its last event. That means the bridge is working.
 4. Each client needs step 2 done separately. If a client shows as missing in tray Settings → World of Warcraft, paste its folder path there; leave a field empty to auto-detect.

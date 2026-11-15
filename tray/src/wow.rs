@@ -5,7 +5,7 @@ use std::path::{Path, PathBuf};
 /// Azeradio is Forever-only; the table stays so the one flavor is
 /// resolved the same way everywhere.
 const FLAVORS: [(&str, &str, &str); 1] = [
-    ("forever", "_classic_beta_", "wow_classic_beta"),
+    ("forever", "_forever_", "wowf"),
 ];
 
 pub fn flavor_meta(name: &str) -> (&'static str, &'static str) {
@@ -13,7 +13,7 @@ pub fn flavor_meta(name: &str) -> (&'static str, &'static str) {
         .iter()
         .find(|(n, _, _)| *n == name)
         .map(|(_, d, id)| (*d, *id))
-        .unwrap_or(("_classic_beta_", "wow_classic_beta"))
+        .unwrap_or(("_forever_", "wowf"))
 }
 
 /// One row of the Settings → World of Warcraft card.
@@ -193,9 +193,9 @@ mod tests {
     fn manual_install_root_descends_to_flavor() {
         let root = std::env::temp_dir().join("azeradio-test-root");
         wipe(&root);
-        let flav = root.join("_classic_beta_");
+        let flav = root.join("_forever_");
         std::fs::create_dir_all(flav.join("Logs")).unwrap();
-        std::fs::write(flav.join(".flavor.info"), "Product Flavor!STRING:0\nwow_classic_beta\n").unwrap();
+        std::fs::write(flav.join(".flavor.info"), "Product Flavor!STRING:0\nwowf\n").unwrap();
         let (dir, src) = resolve("forever", root.to_str().unwrap());
         assert_eq!(src, "manual");
         assert_eq!(dir, Some(flav));
@@ -204,7 +204,7 @@ mod tests {
 
     #[test]
     fn manual_missing_path_resolves_none() {
-        let (dir, src) = resolve("forever", "D:\\definitely\\not\\here\\_classic_beta_");
+        let (dir, src) = resolve("forever", "D:\\definitely\\not\\here\\_forever_");
         assert_eq!(src, "manual");
         assert!(dir.is_none());
     }

@@ -9,19 +9,79 @@
 
 local PREFIX = "[AZERADIO]"
 
--- Hidden log frame: the client writes every AddMessage call to
--- Logs/WoWChatLog.txt, exactly like any chat window — but this frame is a
--- single pixel parked off-screen, so the player never sees a thing. The
--- frame stays shown (only its position hides it), so logging behaves
--- exactly like any ordinary chat window.
--- (If this ever stops logging, the fallback is a dedicated FCF chat window
--- with its tab hidden.)
+-- Hidden log window: chat logging (Logs/WoWChatLog.txt) only captures real
+-- chat frames (FCF windows). A custom ScrollingMessageFrame is never logged,
+-- so the bridge lines would silently reach nobody. We open one dedicated FCF
+-- window, strip its groups/channels, park it off-screen at 1px, and hide its
+-- tab: the player never sees a thing, but every AddMessage is logged exactly
+-- like any ordinary chat window.
 
-local logFrame = CreateFrame("ScrollingMessageFrame", "AzeradioLogFrame", UIParent)
-logFrame:SetSize(1, 1)
-logFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", -10, 10)
-logFrame:SetMaxLines(50)
-logFrame:SetFontObject(ChatFontNormal)
+local WINDOW_NAME = "AzeradioLog"
+
+local function setupLogFrame(f)
+    if FCF_SetWindowName then
+        FCF_SetWindowName(f, WINDOW_NAME)
+    end
+    if FCF_UnDockFrame then
+        FCF_UnDockFrame(f)
+    end
+    if FCF_SetLocked then
+        FCF_SetLocked(f, 1)
+    end
+    if ChatFrame_RemoveAllMessageGroups then
+        ChatFrame_RemoveAllMessageGroups(f)
+    end
+    if ChatFrame_RemoveAllChannels then
+        ChatFrame_RemoveAllChannels(f)
+    end
+    f:SetClampedToScreen(false)
+    f:ClearAllPoints()
+    f:SetPoint("TOPLEFT", UIParent, "TOPLEFT", -10, 10)
+    f:SetSize(1, 1)
+    local tab = _G[f:GetName() .. "Tab"]
+    if tab then
+        tab:Hide()
+    end
+    if FCF_SelectDockFrame then
+        FCF_SelectDockFrame(ChatFrame1)
+    end
+    return f
+end
+
+local function acquireLogFrame()
+    for i = 1, NUM_CHAT_WINDOWS do
+        local f = _G["ChatFrame" .. i]
+        if f and f.name == WINDOW_NAME then
+            return setupLogFrame(f)
+        end
+    end
+    if FCF_OpenNewWindow then
+        FCF_OpenNewWindow(WINDOW_NAME)
+        for i = 1, NUM_CHAT_WINDOWS do
+            local f = _G["ChatFrame" .. i]
+            if f and f.name == WINDOW_NAME then
+                return setupLogFrame(f)
+            end
+        end
+        if FCF_GetCurrentChatFrame then
+            local f = FCF_GetCurrentChatFrame()
+            if f then
+                return setupLogFrame(f)
+            end
+        end
+    end
+    return nil
+end
+
+local logFrame = acquireLogFrame()
+if not logFrame then
+    -- Last-resort fallback: visible nowhere, but also never chat-logged.
+    logFrame = CreateFrame("ScrollingMessageFrame", "AzeradioLogFrame", UIParent)
+    logFrame:SetSize(1, 1)
+    logFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", -10, 10)
+    logFrame:SetMaxLines(50)
+    logFrame:SetFontObject(ChatFontNormal)
+end
 
 local frame = CreateFrame("Frame")
 frame:RegisterEvent("PLAYER_ENTERING_WORLD")
@@ -33,8 +93,26 @@ frame:RegisterEvent("PLAYER_REGEN_ENABLED")
 
 local combatAnnounce = true
 
+-- Chat logging is a real API (LoggingChat), not a CVar: the old
+-- SetCVar("chatLog", ...) silently did nothing, so the log file was never
+-- created. CVar read kept as a fallback for clients lacking the API.
+local function isLogging()
+    if LoggingChat then
+        return LoggingChat()
+    end
+    return GetCVar("chatLog") == "1"
+end
+
 local function logState()
-    return (GetCVar("chatLog") == "1") and "on" or "off"
+    return isLogging() and "on" or "off"
+end
+
+local function setLogging(on)
+    if LoggingChat then
+        LoggingChat(on and true or false)
+    else
+        SetCVar("chatLog", on and "1" or "0")
+    end
 end
 
 local function esc(s)
@@ -80,10 +158,10 @@ SlashCmdList["AZERADIO"] = function(msg)
         combatAnnounce = false
         DEFAULT_CHAT_FRAME:AddMessage(PREFIX .. " combat announcements off")
     elseif msg == "log on" then
-        SetCVar("chatLog", "1")
+        setLogging(true)
         DEFAULT_CHAT_FRAME:AddMessage(PREFIX .. " chat logging " .. logState() .. " — quit and restart the game fully (not /reload)")
     elseif msg == "log off" then
-        SetCVar("chatLog", "0")
+        setLogging(false)
         DEFAULT_CHAT_FRAME:AddMessage(PREFIX .. " chat logging " .. logState())
     elseif msg == "log" then
         DEFAULT_CHAT_FRAME:AddMessage(PREFIX .. " chat logging is " .. logState())

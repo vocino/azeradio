@@ -19,7 +19,7 @@ This is ToS-safe: the game writes the log file itself, and the tray app only use
 
 ## Install
 
-- **Addon:** download [Azeradio.zip](https://github.com/vocino/azeradio/releases/download/addon/latest/Azeradio.zip) (always the newest) and unzip it into the Forever client's `Interface/AddOns` (`_classic_beta_`).
+- **Addon:** download [Azeradio.zip](https://github.com/vocino/azeradio/releases/download/addon/latest/Azeradio.zip) (always the newest) and unzip it into the Forever client's `Interface/AddOns` (`_forever_`).
 - **Tray:** download and run [Azeradio-setup.exe](https://github.com/vocino/azeradio/releases/download/tray/latest/Azeradio-setup.exe) (always the newest). Then follow `docs/SETUP.md`: about 10 minutes, most of it clicking around Spotify's website once.
 
 Older versions live under [Releases](https://github.com/vocino/azeradio/releases).

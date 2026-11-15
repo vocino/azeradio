@@ -37,7 +37,7 @@ pub struct SpotifyAuth {
 }
 
 /// WoW install directory: the Forever client folder itself, e.g.
-/// `D:\Blizzard\World of Warcraft\_classic_beta_`. Empty string = auto-detect.
+/// `D:\Blizzard\World of Warcraft\_forever_`. Empty string = auto-detect.
 #[derive(Debug, Serialize, Deserialize, Default)]
 pub struct WowPaths {
     #[serde(default)]
