@@ -49,7 +49,10 @@ Invoke-Section "Addon contract tests" {
         return
     }
     lua addon/tests/test_core.lua
-    if ($LASTEXITCODE -eq 0) {
+    $coreCode = $LASTEXITCODE
+    lua addon/tests/test_options.lua
+    $optionsCode = $LASTEXITCODE
+    if (($coreCode -eq 0) -and ($optionsCode -eq 0)) {
         Write-Host "PASS: addon bridge format matches the tray contract."
         $script:sectionState = "PASS"
     } else {

@@ -1,6 +1,7 @@
 ## Interface: 16001
 ## Title: Azeradio
-## Notes: Announces zone changes for the Azeradio Spotify bridge (Forever client)
+## Notes: Announces zone changes for the Azeradio Spotify bridge (Forever client) (/azeradio)
 ## Author: Vocino
 ## Version: 0.1.0
 core.lua
+options.lua

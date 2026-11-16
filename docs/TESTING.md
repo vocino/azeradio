@@ -23,7 +23,7 @@ No failures. BLOCKED sections (if any) are covered by CI -- see docs/TESTING.md.
 | Section | What runs | What it proves |
 |---|---|---|
 | Addon syntax | `luac -p addon/Azeradio/core.lua` | The addon compiles. |
-| Addon contract tests | `lua addon/tests/test_core.lua` (28 checks, no dependencies) | Every bridge line the addon writes matches the format the tray parses in `tray/src/bridge.rs`: prefix, all seven keys, combat flag, `why` tags, quote escaping, slash commands. |
+| Addon contract tests | `lua addon/tests/test_core.lua` (28 checks) and `lua addon/tests/test_options.lua` (33 checks, no dependencies) | Every bridge line the addon writes matches the format the tray parses in `tray/src/bridge.rs`: prefix, all seven keys, combat flag, `why` tags, quote escaping, slash commands. The options run proves the in-game panel registers, both toggles drive live state with sounds, the test button emits a bridge line, and slash stays in sync. |
 | Zone library | `node scripts/check-library.js` | `tray/library.json` parses and every row is a real `spotify:` URI. |
 | Tray unit tests | `cargo test --manifest-path tray/Cargo.toml` | Playlist picking, library merge, and WoW path resolution. |
 

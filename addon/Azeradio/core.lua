@@ -138,6 +138,28 @@ local function announce(why)
     )
 end
 
+-- Shared state for the Interface Options panel (options.lua) and slash
+-- commands. Single source of truth: both read and write through here.
+Azeradio = Azeradio or {}
+function Azeradio.IsCombatAnnounce()
+    return combatAnnounce
+end
+function Azeradio.SetCombatAnnounce(on)
+    combatAnnounce = on and true or false
+end
+function Azeradio.IsLogging()
+    return isLogging()
+end
+function Azeradio.SetLogging(on)
+    setLogging(on)
+end
+function Azeradio.SendTest()
+    announce("test")
+end
+function Azeradio.StatusText()
+    return PREFIX .. " bridge active (combat " .. (combatAnnounce and "on" or "off") .. ", chat log " .. logState() .. ")"
+end
+
 frame:SetScript("OnEvent", function(_, event)
     if event == "PLAYER_REGEN_DISABLED" or event == "PLAYER_REGEN_ENABLED" then
         if combatAnnounce then
@@ -152,10 +174,10 @@ SLASH_AZERADIO1 = "/azeradio"
 SlashCmdList["AZERADIO"] = function(msg)
     msg = strtrim(msg:lower())
     if msg == "combat on" then
-        combatAnnounce = true
+        Azeradio.SetCombatAnnounce(true)
         DEFAULT_CHAT_FRAME:AddMessage(PREFIX .. " combat announcements on")
     elseif msg == "combat off" then
-        combatAnnounce = false
+        Azeradio.SetCombatAnnounce(false)
         DEFAULT_CHAT_FRAME:AddMessage(PREFIX .. " combat announcements off")
     elseif msg == "log on" then
         setLogging(true)
@@ -169,7 +191,7 @@ SlashCmdList["AZERADIO"] = function(msg)
         announce("test")
         DEFAULT_CHAT_FRAME:AddMessage(PREFIX .. " test event sent (invisible) — check the tray status line")
     else
-        DEFAULT_CHAT_FRAME:AddMessage(PREFIX .. " bridge active (combat " .. (combatAnnounce and "on" or "off") .. ", chat log " .. logState() .. ")")
+        DEFAULT_CHAT_FRAME:AddMessage(Azeradio.StatusText())
         DEFAULT_CHAT_FRAME:AddMessage(PREFIX .. " usage: /azeradio combat on|off, /azeradio log on|off, /azeradio test")
     end
 end
