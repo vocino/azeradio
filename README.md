@@ -26,19 +26,16 @@ Older versions live under [Releases](https://github.com/vocino/azeradio/releases
 
 ## Map zones to playlists
 
-Azeradio ships with the [Azeroth soundtrack library](https://vocino.github.io/azeradio/) already mapped, and the tray picks up new library zones on its own (daily, without overwriting your rows). Zones with no mapping hold the last playlist. Remap any of them in Settings → Music: right-click the tray icon and open Settings → Music: combat and fallback playlists up top, one row per zone, subzone, or instance below. Play first and the names you visit appear as click-to-add shortcuts. The same data lives in `mappings.json`, shaped like this:
+Azeradio ships with the [Azeroth soundtrack library](https://vocino.github.io/azeradio/) already mapped, and the tray picks up new library zones on its own (daily, without overwriting your rows). Zones with no mapping hold the last playlist. Remap any of them in Settings → Music: right-click the tray icon and open Settings → Music, one row per major zone plus an optional fallback below. Play first and the zones you visit appear as click-to-add shortcuts. The same data lives in `mappings.json`, shaped like this:
 
 ```json
 {
   "zones": { "Orgrimmar": "spotify:playlist:..." },
-  "subzones": { "Valdrakken": "spotify:playlist:..." },
-  "instances": { "Amirdrassil, the Dream's Hope": "spotify:playlist:..." },
-  "combat_playlist": "spotify:playlist:...",
   "fallback_playlist": "spotify:playlist:..."
 }
 ```
 
-Most specific match wins: subzone, then zone, then instance, then fallback. Combat always wins while you are in combat.
+Major zones only: the zone name picks the playlist, otherwise the fallback plays (or the last playlist holds when no fallback is set).
 
 ## Releases
 

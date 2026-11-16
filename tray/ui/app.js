@@ -122,7 +122,7 @@ document.querySelectorAll('[data-browse]').forEach((b) => {
 
 // --- Music ---
 
-const MAPS = ['zones', 'subzones', 'instances'];
+const MAPS = ['zones'];
 
 function mapRow(list, name = '', uri = '') {
   const box = document.getElementById('list' + cap(list));
@@ -160,7 +160,6 @@ async function refreshMusic() {
       const el = document.getElementById(id);
       if (document.activeElement !== el) el.value = v || '';
     };
-    set('combatUri', m.combat_playlist);
     set('fallbackUri', m.fallback_playlist);
     set('deviceId', m.device_id);
   } catch (e) {
@@ -191,12 +190,15 @@ document.getElementById('saveMusic').addEventListener('click', async () => {
   msg.classList.remove('err');
   msg.textContent = '';
   try {
+    // Zones and fallback are the whole UI for now; anything already stored
+    // for subzones, instances, or combat carries over untouched.
+    const cur = await invoke('get_mappings');
     await invoke('save_mappings', {
       m: {
         zones: collectMap('zones'),
-        subzones: collectMap('subzones'),
-        instances: collectMap('instances'),
-        combat_playlist: optVal('combatUri'),
+        subzones: cur.subzones || {},
+        instances: cur.instances || {},
+        combat_playlist: cur.combat_playlist || null,
         fallback_playlist: optVal('fallbackUri'),
         device_id: optVal('deviceId'),
       },
@@ -218,20 +220,19 @@ async function refreshRecent() {
     const seen = new Set();
     let n = 0;
     for (const ev of await invoke('get_recent')) {
-      for (const [name, list] of [[ev.zone, 'zones'], [ev.subzone, 'subzones'], [ev.instance_name, 'instances']]) {
-        if (!name || seen.has(list + '\0' + name) || n >= 12) continue;
-        seen.add(list + '\0' + name);
-        n += 1;
-        const b = document.createElement('button');
-        b.className = 'chip';
-        b.textContent = name;
-        b.title = 'Add to ' + list;
-        b.addEventListener('click', () => {
-          const row = mapRow(list, name, '');
-          row.querySelector('.ur').focus();
-        });
-        box.appendChild(b);
-      }
+      const name = ev.zone;
+      if (!name || seen.has(name) || n >= 12) continue;
+      seen.add(name);
+      n += 1;
+      const b = document.createElement('button');
+      b.className = 'chip';
+      b.textContent = name;
+      b.title = 'Add to zones';
+      b.addEventListener('click', () => {
+        const row = mapRow('zones', name, '');
+        row.querySelector('.ur').focus();
+      });
+      box.appendChild(b);
     }
     if (!n) box.innerHTML = '<p class="empty">Play the game and zones show up here.</p>';
   } catch (e) {

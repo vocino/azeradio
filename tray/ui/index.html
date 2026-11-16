@@ -126,20 +126,12 @@
 
   <div class="card">
     <h2>Music</h2>
-    <p class="note" style="margin-top:0">Most specific match wins: subzone, then zone, then instance, then fallback. Combat wins over all of them.</p>
-    <label for="combatUri">Combat playlist</label>
-    <input id="combatUri" type="text" placeholder="spotify:playlist:…" autocomplete="off" spellcheck="false">
+    <p class="note" style="margin-top:0">Major zones only: the zone name picks the playlist, otherwise the fallback plays.</p>
     <label for="fallbackUri">Fallback playlist</label>
     <input id="fallbackUri" type="text" placeholder="spotify:playlist:…" autocomplete="off" spellcheck="false">
     <div class="listlabel">Zones</div>
     <div id="listZones"></div>
     <button class="ghost small" data-add="zones">+ Add zone</button>
-    <div class="listlabel">Subzones</div>
-    <div id="listSubzones"></div>
-    <button class="ghost small" data-add="subzones">+ Add subzone</button>
-    <div class="listlabel">Instances</div>
-    <div id="listInstances"></div>
-    <button class="ghost small" data-add="instances">+ Add instance</button>
     <div class="listlabel">Recently seen in game</div>
     <div class="chips" id="recentChips"></div>
     <p class="note">Click a name to start a row for it, then paste its playlist URI. Right-click a playlist in Spotify, Share, Copy Spotify URI.</p>

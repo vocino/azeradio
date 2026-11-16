@@ -41,26 +41,12 @@ fn parse_line(line: &str) -> Option<ZoneEvent> {
     })
 }
 
-/// Most specific match wins: subzone, then zone, then instance, then fallback.
-/// Combat always wins while you are in combat.
+/// Major zones only: the zone name picks the playlist, otherwise the
+/// fallback plays. Subzone, instance, and combat matching are out of scope
+/// for now — their fields stay on the event so they can come back later.
 fn pick_playlist<'a>(ev: &ZoneEvent, m: &'a config::Mappings) -> Option<&'a str> {
-    if ev.combat {
-        if let Some(c) = &m.combat_playlist {
-            return Some(c);
-        }
-    }
-    if !ev.subzone.is_empty() {
-        if let Some(u) = m.subzones.get(&ev.subzone) {
-            return Some(u);
-        }
-    }
     if !ev.zone.is_empty() {
         if let Some(u) = m.zones.get(&ev.zone) {
-            return Some(u);
-        }
-    }
-    if !ev.instance_name.is_empty() {
-        if let Some(u) = m.instances.get(&ev.instance_name) {
             return Some(u);
         }
     }
@@ -332,15 +318,21 @@ mod tests {
     }
 
     #[test]
-    fn most_specific_match_wins() {
+    fn zone_match_wins() {
         let m = mappings();
-        let ev = ZoneEvent { zone: "Orgrimmar".into(), subzone: "Valdrakken".into(), ..Default::default() };
-        assert_eq!(pick_playlist(&ev, &m), Some("spotify:playlist:sub"));
-        let ev = ZoneEvent { instance_name: "Amirdrassil".into(), ..Default::default() };
-        assert_eq!(pick_playlist(&ev, &m), Some("spotify:playlist:inst"));
+        // Major zone hits even when a mapped subzone or instance rides along.
+        let ev = ZoneEvent { zone: "Orgrimmar".into(), subzone: "Valdrakken".into(), instance_name: "Amirdrassil".into(), ..Default::default() };
+        assert_eq!(pick_playlist(&ev, &m), Some("spotify:playlist:zone"));
+        // Combat never overrides the zone.
+        let ev = ZoneEvent { zone: "Orgrimmar".into(), combat: true, ..Default::default() };
+        assert_eq!(pick_playlist(&ev, &m), Some("spotify:playlist:zone"));
+        // Unknown zones fall back.
         let ev = ZoneEvent { zone: "Nowhere".into(), ..Default::default() };
         assert_eq!(pick_playlist(&ev, &m), Some("spotify:playlist:fallback"));
-        let ev = ZoneEvent { zone: "Orgrimmar".into(), subzone: "Valdrakken".into(), combat: true, ..Default::default() };
-        assert_eq!(pick_playlist(&ev, &m), Some("spotify:playlist:combat"));
+        // No zone and no fallback means silence (hold the last playlist).
+        let ev = ZoneEvent { subzone: "Valdrakken".into(), ..Default::default() };
+        let mut no_fallback = mappings();
+        no_fallback.fallback_playlist = None;
+        assert_eq!(pick_playlist(&ev, &no_fallback), None);
     }
 }

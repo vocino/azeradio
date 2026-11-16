@@ -43,11 +43,11 @@ Done. Azeradio refreshes its own login from here on. If Spotify ever logs you ou
 ## Part 4: map your music (the fun part)
 
 1. Right-click the tray icon and open **Settings**, then the **Music** card.
-2. Fill in the combat and fallback playlists. To get a playlist`s address: in Spotify, right-click a playlist, choose **Share**, then **Copy Spotify URI**. It looks like `spotify:playlist:37i9dQZF1DX...`. You want the URI, not the web link. Albums and artists work too, anywhere a playlist does.
-3. Add one row per zone, subzone, or instance. Tip: play the game first and the names you visit show up as click-to-add shortcuts, spelled exactly right.
+2. Fill in the fallback playlist (optional but recommended for zones with no mapping yet). To get a playlist's address: in Spotify, right-click a playlist, choose **Share**, then **Copy Spotify URI**. It looks like `spotify:playlist:37i9dQZF1DX...`. You want the URI, not the web link. Albums and artists work too, anywhere a playlist does.
+3. Add one row per major zone. Tip: play the game first and the zones you visit show up as click-to-add shortcuts, spelled exactly right.
 4. Save. That is it. No restart: the next zone change picks up your edits. (The same data lives in `mappings.json` if you ever prefer editing the file. New zones from the soundtrack library merge in on their own; your rows are never overwritten.)
 
-How matching works: the most specific name wins. Subzone first, then zone, then instance, then the fallback. The combat playlist wins over all of them while you are in combat, and the zone music comes back when combat ends. Zone names must match the game exactly; if you are unsure of a spelling, play first and use the click-to-add shortcuts in Settings → Music.
+How matching works: the major zone name picks the playlist. Anywhere unmapped holds the last playlist, or plays the fallback when one is set. Zone names must match the game exactly; if you are unsure of a spelling, play first and use the click-to-add shortcuts in Settings → Music.
 
 ## Troubleshooting
 
