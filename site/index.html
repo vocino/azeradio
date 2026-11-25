@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Azeradio: a soundtrack for Azeroth</title>
+<meta name="description" content="Hand-built Spotify playlists for the zones of Azeroth. Ten tracks per zone, in the order you would walk them, no track used twice.">
+<link rel="icon" href="covers/stormwind.jpg">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <h1>Azeradio</h1>
+  <p class="tagline">A soundtrack for Azeroth that follows you.</p>
+  <p class="method">Ten tracks per zone, in the order you would walk them, and no track used twice.</p>
+</header>
+
+<div class="toolbar" role="search">
+  <label class="visually-hidden" for="search">Search playlists</label>
+  <input id="search" type="search" placeholder="Search a zone, like Stranglethorn or Barrens" autocomplete="off" autocapitalize="off" spellcheck="false">
+  <div class="chips" role="group" aria-label="Filter by group">
+    <button type="button" class="chip is-active" data-group="All" aria-pressed="true">All</button>
+    <button type="button" class="chip" data-group="Capitals" aria-pressed="false">Capitals</button>
+    <button type="button" class="chip" data-group="Eastern Kingdoms" aria-pressed="false">Eastern Kingdoms</button>
+    <button type="button" class="chip" data-group="Kalimdor" aria-pressed="false">Kalimdor</button>
+    <button type="button" class="chip" data-group="Combat" aria-pressed="false">Combat</button>
+  </div>
+  <p class="count" id="count" aria-live="polite"></p>
+</div>
+
+<main>
+  <div class="grid" id="grid"></div>
+  <p class="empty" id="empty" hidden>Nothing matches. Try another zone.</p>
+</main>
+
+<footer>
+  <p>
+    <a href="https://github.com/vocino/azeradio">github.com/vocino/azeradio</a>
+    <a href="https://github.com/vocino/azeradio/blob/main/docs/SETUP.md">Setup guide</a>
+    <a href="https://wow.vocino.com/forever/radio">Forever second screen</a>
+  </p>
+  <p class="fine">Playlists are free to hear. Some are still private in Spotify and open there instead of playing here.</p>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
