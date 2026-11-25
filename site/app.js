@@ -93,10 +93,32 @@ function init() {
       : all.length + (all.length === 1 ? ' playlist' : ' playlists');
   }
 
+  function isControllerConnected() {
+    return !!(window.Azeradio && Azeradio.isConnected());
+  }
+
+  function playLabel() {
+    return isControllerConnected() ? 'Play on Spotify' : 'Play here';
+  }
+
+  // Connected, a click plays on Spotify. Anything else opens the embed
+  // on the card, and a private playlist with no controller just stays
+  // a link - the board never goes dead.
+  function playCard(p, card, player, play) {
+    if (isControllerConnected()) {
+      Azeradio.playPlaylist(p.spotifyId).then(function (ok) {
+        if (!ok && shouldEmbed(p)) togglePlayer(p, card, player, play);
+      });
+      return;
+    }
+    if (shouldEmbed(p)) togglePlayer(p, card, player, play);
+  }
+
   function buildCard(p) {
     var card = document.createElement('article');
     card.className = 'card';
     card.setAttribute('data-slug', p.slug);
+    card.setAttribute('data-spotify-id', p.spotifyId);
 
     var img = document.createElement('img');
     img.src = 'covers/' + p.cover;
@@ -117,23 +139,27 @@ function init() {
     player.className = 'player';
     card.appendChild(player);
 
-    if (shouldEmbed(p)) {
+    // A public playlist always plays somewhere; a private one only plays
+    // through the controller, since its embed renders "not found".
+    var canPlay = shouldEmbed(p) || isControllerConnected();
+
+    if (canPlay) {
       var play = document.createElement('button');
       play.type = 'button';
       play.className = 'btn btn-primary';
-      play.textContent = 'Play here';
-      play.addEventListener('click', function () { togglePlayer(p, card, player, play); });
+      play.textContent = playLabel();
+      play.addEventListener('click', function () { playCard(p, card, player, play); });
       card.appendChild(play);
 
       card.tabIndex = 0;
       card.addEventListener('click', function (e) {
         if (e.target.closest('a, button, iframe')) return;
-        togglePlayer(p, card, player, play);
+        playCard(p, card, player, play);
       });
       card.addEventListener('keydown', function (e) {
         if ((e.key === 'Enter' || e.key === ' ') && e.target === card) {
           e.preventDefault();
-          togglePlayer(p, card, player, play);
+          playCard(p, card, player, play);
         }
       });
     } else {
@@ -144,7 +170,7 @@ function init() {
     }
 
     var open = document.createElement('a');
-    open.className = 'btn' + (shouldEmbed(p) ? '' : ' btn-primary');
+    open.className = 'btn' + (canPlay ? '' : ' btn-primary');
     open.href = openUrl(p);
     open.target = '_blank';
     open.rel = 'noopener';
@@ -182,7 +208,7 @@ function init() {
   function closePlayer(card, player, play) {
     player.textContent = '';
     card.classList.remove('is-open');
-    if (play) play.textContent = 'Play here';
+    if (play) play.textContent = playLabel();
     openSlug = null;
   }
 
@@ -216,4 +242,8 @@ function init() {
       render();
     }
   });
+
+  // The controller calls this when the Spotify connection changes, so
+  // the cards switch between the embed player and the controller.
+  window.__azeradioAuthChanged = render;
 }

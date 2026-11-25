@@ -37,11 +37,37 @@
   <p>
     <a href="https://github.com/vocino/azeradio">github.com/vocino/azeradio</a>
     <a href="https://github.com/vocino/azeradio/blob/main/docs/SETUP.md">Setup guide</a>
-    <a href="https://wow.vocino.com/forever/radio">Forever second screen</a>
+    <a href="https://wow.vocino.com/forever">Forever roster</a>
   </p>
   <p class="fine">Playlists are free to hear. Some are still private in Spotify and open there instead of playing here.</p>
 </footer>
 
+<div class="controller" id="controller" role="region" aria-label="Spotify controller">
+  <p class="ctl-status" id="ctl-status">Not connected. Play here works without connecting.</p>
+  <p class="ctl-now" id="ctl-now" hidden></p>
+  <div class="ctl-transport">
+    <button type="button" id="ctl-prev" disabled>Prev</button>
+    <button type="button" id="ctl-toggle" disabled>Play</button>
+    <button type="button" id="ctl-next" disabled>Next</button>
+  </div>
+  <div class="ctl-progress-wrap">
+    <input type="range" id="ctl-progress" min="0" max="1000" value="0" step="1000" aria-label="Seek" disabled>
+    <span class="ctl-time" id="ctl-time">0:00 / 0:00</span>
+  </div>
+  <label class="ctl-volume">Volume
+    <input type="range" id="ctl-volume" min="0" max="100" value="100" step="1" aria-label="Volume">
+  </label>
+  <div class="ctl-connect">
+    <span class="ctl-id" id="ctl-id-wrap" hidden>
+      <input type="text" id="ctl-id" placeholder="Spotify client ID" aria-label="Spotify client ID" autocomplete="off" spellcheck="false">
+      <button type="button" id="ctl-save-id">Save</button>
+    </span>
+    <button type="button" id="ctl-connect">Connect Spotify</button>
+    <button type="button" id="ctl-disconnect" hidden>Disconnect</button>
+  </div>
+</div>
+
 <script src="app.js"></script>
+<script src="controller.js"></script>
 </body>
 </html>

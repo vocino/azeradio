@@ -195,11 +195,123 @@ main { padding-top: 24px; }
   margin: 0 0 12px;
 }
 
+.card.is-playing {
+  border-color: var(--accent);
+}
+
 .empty {
   color: var(--dim);
   font-size: 1.15rem;
   text-align: center;
   padding: 48px 16px;
+}
+
+/* Spotify controller: sticks to the bottom of the screen while the
+   cards scroll above it, so it works as a second-screen controller. */
+.controller {
+  position: sticky;
+  bottom: 0;
+  z-index: 20;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  padding: 12px 20px;
+  background: var(--panel);
+  border-top: 1px solid var(--line);
+}
+
+.controller p { margin: 0; }
+
+.ctl-status {
+  color: var(--dim);
+  font-size: 0.95rem;
+}
+
+.ctl-now {
+  font-weight: 600;
+}
+
+.ctl-transport {
+  display: flex;
+  gap: 8px;
+}
+
+.ctl-transport button,
+.ctl-connect button,
+.ctl-id button {
+  min-height: 40px;
+  padding: 8px 14px;
+  font-size: 1rem;
+  font-family: inherit;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.ctl-transport button:hover:not(:disabled),
+.ctl-connect button:hover:not(:disabled),
+.ctl-id button:hover:not(:disabled) { border-color: var(--accent); }
+
+.ctl-transport button:disabled,
+.ctl-progress-wrap input:disabled { opacity: 0.45; }
+
+.ctl-progress-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 200px;
+}
+
+.ctl-progress-wrap input[type="range"] { flex: 1; }
+
+.ctl-time {
+  color: var(--dim);
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.ctl-volume {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--dim);
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+
+.ctl-volume input[type="range"] { width: 110px; }
+
+.controller input[type="range"] { accent-color: var(--accent); }
+
+.ctl-connect {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.ctl-id {
+  display: flex;
+  gap: 8px;
+}
+
+.ctl-id input {
+  min-height: 40px;
+  padding: 8px 12px;
+  font-size: 1rem;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.ctl-id input:focus {
+  outline: none;
+  border-color: var(--accent);
 }
 
 footer {

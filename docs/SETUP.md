@@ -19,6 +19,7 @@ Spotify caps shared keys at a handful of users, so everyone uses their own free 
 6. Find the **Redirect URIs** box. Paste this exactly:
    `http://127.0.0.1:8899/callback`
    Click **Add**, then scroll to the bottom and click **Save**. Two easy mistakes here: skipping Add, and skipping Save. Also note it must be `127.0.0.1`, not `localhost`. Spotify rejects `localhost` now.
+   The web hub at azeradio.vocino.com uses the same app and the same client ID, but its own redirect URI: add `https://azeradio.vocino.com/` to the same list if you use the hub's controller. Both URIs can live in one app.
 7. On that same Settings page, copy the **Client ID** (the long mix of letters and numbers). Ignore the client secret completely. Azeradio never asks for it.
 
 That is the whole Spotify side. Leave the tab open in case you need to double check step 6 later.
