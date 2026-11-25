@@ -12,7 +12,7 @@ serve this directory directly. Planned home: azeradio.vocino.com.
 3. That is the whole change. Cards, search, chips, and embeds all read
    from `playlists.json`. Nothing is hardcoded in the HTML.
 
-Groups are Capitals, Eastern Kingdoms, Kalimdor, and Combat. The chip
+Groups are Capitals, Eastern Kingdoms, and Kalimdor. The chip
 row in `index.html` lists them; a new group needs a chip there too.
 
 ## The public flag
